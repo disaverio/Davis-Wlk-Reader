@@ -1,0 +1,1 @@
+Application to translate binary `wlk` files from Davis Weather Instruments, to human-readable `csv` files
