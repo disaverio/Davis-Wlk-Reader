@@ -2,7 +2,7 @@ package dev.disaverio.wlkreader.types
 
 class RainRate private constructor(private val precipitation: Precipitation) {
 
-    val inph: Double
+    val inchesph: Double
         get() = precipitation.inches
 
     val mmph: Double
