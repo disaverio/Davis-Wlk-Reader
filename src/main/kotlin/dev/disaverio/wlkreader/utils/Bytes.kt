@@ -12,15 +12,6 @@ fun ByteArray.toInt() =
 fun ByteArray.toUInt() =
     this.toUIntLittleEndian()
 
-fun ByteArray.toIntUnsigned(): Int {
-    val value = this.toUIntLittleEndian()
-
-    if (value > Int.MAX_VALUE.toUInt())
-        throw Exception("Value overflow")
-
-    return value.toInt()
-}
-
 
 // SHORTCUTS: to Int and UInt, from UByteArray
 
@@ -29,15 +20,6 @@ fun UByteArray.toInt() =
 
 fun UByteArray.toUInt() =
     this.toUIntLittleEndian()
-
-fun UByteArray.toIntUnsigned(): Int {
-    val value = this.toUIntLittleEndian()
-
-    if (value > Int.MAX_VALUE.toUInt())
-        throw Exception("Value overflow")
-
-    return value.toInt()
-}
 
 
 // SHORTCUTS: to Short and UShort, from ByteArray
@@ -48,15 +30,6 @@ fun ByteArray.toShort() =
 fun ByteArray.toUShort() =
     this.toUShortLittleEndian()
 
-fun ByteArray.toShortUnsigned(): Short {
-    val value = this.toUShortLittleEndian()
-
-    if (value > Short.MAX_VALUE.toUShort())
-        throw Exception("Value overflow")
-
-    return value.toShort()
-}
-
 
 // SHORTCUTS: to Short and UShort, from UByteArray
 
@@ -65,15 +38,6 @@ fun UByteArray.toShort() =
 
 fun UByteArray.toUShort() =
     this.toUShortLittleEndian()
-
-fun UByteArray.toShortUnsigned(): Short {
-    val value = this.toUShortLittleEndian()
-
-    if (value > Short.MAX_VALUE.toUShort())
-        throw Exception("Value overflow")
-
-    return value.toShort()
-}
 
 
 // to Int and UInt, from ByteArray
