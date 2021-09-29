@@ -1,8 +1,8 @@
 package dev.disaverio.wlkreader.types
 
 import org.junit.Assert
-import org.junit.Test
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -14,7 +14,7 @@ import java.util.stream.Stream
 class WindDirectionTest {
 
     @ParameterizedTest
-    @MethodSource("getTestArguments")
+    @MethodSource("getCheckDirectionTestArguments")
     fun `WindDirection should return right direction, based on provided degrees`(degrees: Double, direction: WindDirection) {
         Assert.assertEquals(direction, WindDirection[degrees])
     }
@@ -27,7 +27,7 @@ class WindDirectionTest {
         Assertions.assertEquals("Invalid amount of degrees for wind direction: $invalidDegreesAmount", ex.message)
     }
 
-    private fun getTestArguments(): Stream<Arguments> =
+    private fun getCheckDirectionTestArguments(): Stream<Arguments> =
         Stream.of(
             Arguments.of(0.0, WindDirection.N),
             Arguments.of(22.5, WindDirection.NNE),
