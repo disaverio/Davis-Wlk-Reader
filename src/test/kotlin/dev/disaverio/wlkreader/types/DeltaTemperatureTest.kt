@@ -12,7 +12,7 @@ class DeltaTemperatureTest {
         "523.715, 290.952777778",
         "0, 0"
     )
-    fun `DeltaTemperature#fromFahrenheit should correctly store fahrenheit and convert to other units`(fahrenheit: Double, celsius: Double) {
+    fun `fromFahrenheit should correctly store fahrenheit and convert to other units`(fahrenheit: Double, celsius: Double) {
         val deltaTemperature = DeltaTemperature.fromFahrenheit(fahrenheit)
 
         Assert.assertEquals(fahrenheit, deltaTemperature.fahrenheit, 0.000000001)

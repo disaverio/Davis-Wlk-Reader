@@ -12,7 +12,7 @@ class PrecipitationTest {
         "3.597, 91.3638",
         "0, 0"
     )
-    fun `Precipitation#fromInches should correctly store inches and convert to other units`(inches: Double, mm: Double) {
+    fun `fromInches should correctly store inches and convert to other units`(inches: Double, mm: Double) {
         val precipitation = Precipitation.fromInches(inches)
 
         Assert.assertEquals(inches, precipitation.inches, 0.000000001)
@@ -25,7 +25,7 @@ class PrecipitationTest {
         "3.597, 91.3638",
         "0, 0"
     )
-    fun `Precipitation#fromMm should correctly store mm and convert to other units`(inches: Double, mm: Double) {
+    fun `fromMm should correctly store mm and convert to other units`(inches: Double, mm: Double) {
         val precipitation = Precipitation.fromMm(mm)
 
         Assert.assertEquals(mm, precipitation.mm, 0.000000001)

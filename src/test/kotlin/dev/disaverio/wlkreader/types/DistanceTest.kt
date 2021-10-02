@@ -12,7 +12,7 @@ class DistanceTest {
         "3.597, 5.788810368, 5788.810368",
         "0, 0, 0"
     )
-    fun `Distance#fromMiles should correctly store miles and convert to other units`(miles: Double, kilometers: Double, meters: Double) {
+    fun `fromMiles should correctly store miles and convert to other units`(miles: Double, kilometers: Double, meters: Double) {
         val distance = Distance.fromMiles(miles)
 
         Assert.assertEquals(miles, distance.miles, 0.000000001)

@@ -12,7 +12,7 @@ class PressureTest {
         "3.597, 121.808400339",
         "0, 0, 0"
     )
-    fun `Pressure#fromInHg should correctly store inHg and convert to other units`(inHg: Double, hPa: Double) {
+    fun `fromInHg should correctly store inHg and convert to other units`(inHg: Double, hPa: Double) {
         val pressure = Pressure.fromInHg(inHg)
 
         Assert.assertEquals(inHg, pressure.inHg, 0.000000001)

@@ -59,7 +59,7 @@ import kotlin.test.assertEquals
 class BytesTest {
 
     @Nested
-    inner class FromArrayToNumber {
+    inner class ArrayConversion {
 
         @ParameterizedTest
         @CsvSource(
