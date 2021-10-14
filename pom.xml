@@ -101,6 +101,13 @@
             <artifactId>kotlin-reflect</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <version>1.12.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

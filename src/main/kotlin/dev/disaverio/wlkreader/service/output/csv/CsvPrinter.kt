@@ -17,8 +17,8 @@ class CsvPrinter(outputFieldsListFilename: String?): FieldsListPrinter(outputFie
         print(elements, outputPathname)
 
     private inline fun<reified T> print(elements: List<T>, outputPathname: String) {
-        val printer = CSVPrinter(FileWriter(outputPathname), CSVFormat.DEFAULT);
-        printer.printRecord(getHeader<T>())
+        val printer = CSVPrinter(FileWriter(outputPathname), CSVFormat.DEFAULT)
+        printer.printRecord(getHeader(elements))
         printer.printRecords(getRequestedFields(elements))
         printer.flush()
         printer.close()
