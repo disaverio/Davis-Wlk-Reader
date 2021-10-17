@@ -1,10 +1,11 @@
 package dev.disaverio.wlkreader.models.wlk
 
+
 enum class DataType(val wlkCode: Int) {
 
+    WEATHER_DATA_RECORD(1),
     DAILY_SUMMARY_1(2),
-    DAILY_SUMMARY_2(3),
-    WEATHER_DATA_RECORD(1);
+    DAILY_SUMMARY_2(3);
 
     companion object {
         operator fun get(code: Int): DataType {

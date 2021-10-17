@@ -43,102 +43,103 @@ class WeatherDataRecord(byteArray: UByteArray) {
         require(DataType[byteArray[0].toInt()] == DataType.WEATHER_DATA_RECORD)
 
         var offset = 0
+
         dataType = byteArray.sliceArray(offset until offset + DATA_TYPE_DIM)
-
         offset += DATA_TYPE_DIM
+
         archiveInterval = byteArray.sliceArray(offset until offset + ARCHIVE_INTERVAL_DIM)
-
         offset += ARCHIVE_INTERVAL_DIM
+
         iconFlags = byteArray.sliceArray(offset until offset + ICON_FLAGS_DIM)
-
         offset += ICON_FLAGS_DIM
+
         moreFlags = byteArray.sliceArray(offset until offset + MORE_FLAGS_DIM)
-
         offset += MORE_FLAGS_DIM
+
         packedTime = byteArray.sliceArray(offset until offset + PACKED_TIME_DIM)
-
         offset += PACKED_TIME_DIM
+
         outsideTemp = byteArray.sliceArray(offset until offset + OUTSIDE_TEMP_DIM)
-
         offset += OUTSIDE_TEMP_DIM
+
         hiOutsideTemp = byteArray.sliceArray(offset until offset + HI_OUTSIDE_TEMP_DIM)
-
         offset += HI_OUTSIDE_TEMP_DIM
+
         lowOutsideTemp = byteArray.sliceArray(offset until offset + LOW_OUTSIDE_TEMP_DIM)
-
         offset += LOW_OUTSIDE_TEMP_DIM
+
         insideTemp = byteArray.sliceArray(offset until offset + INSIDE_TEMP_DIM)
-
         offset += INSIDE_TEMP_DIM
+
         barometer = byteArray.sliceArray(offset until offset + BAROMETER_DIM)
-
         offset += BAROMETER_DIM
+
         outsideHum = byteArray.sliceArray(offset until offset + OUTSIDE_HUM_DIM)
-
         offset += OUTSIDE_HUM_DIM
+
         insideHum = byteArray.sliceArray(offset until offset + INSIDE_HUM_DIM)
-
         offset += INSIDE_HUM_DIM
+
         rain = byteArray.sliceArray(offset until offset + RAIN_DIM)
-
         offset += RAIN_DIM
+
         hiRainRate = byteArray.sliceArray(offset until offset + HI_RAIN_RATE_DIM)
-
         offset += HI_RAIN_RATE_DIM
+
         windSpeed = byteArray.sliceArray(offset until offset + WIND_SPEED_DIM)
-
         offset += WIND_SPEED_DIM
+
         hiWindSpeed = byteArray.sliceArray(offset until offset + HI_WIND_SPEED_DIM)
-
         offset += HI_WIND_SPEED_DIM
+
         windDirection = byteArray.sliceArray(offset until offset + WIND_DIRECTION_DIM)
-
         offset += WIND_DIRECTION_DIM
+
         hiWindDirection = byteArray.sliceArray(offset until offset + HI_WIND_DIRECTION_DIM)
-
         offset += HI_WIND_DIRECTION_DIM
+
         numWindSamples = byteArray.sliceArray(offset until offset + NUM_WIND_SAMPLES_DIM)
-
         offset += NUM_WIND_SAMPLES_DIM
+
         solarRad = byteArray.sliceArray(offset until offset + SOLAR_RAD_DIM)
-
         offset += SOLAR_RAD_DIM
+
         hisolarRad = byteArray.sliceArray(offset until offset + HISOLAR_RAD_DIM)
-
         offset += HISOLAR_RAD_DIM
+
         UV = byteArray.sliceArray(offset until offset + UV_DIM)
-
         offset += UV_DIM
+
         hiUV = byteArray.sliceArray(offset until offset + HI_UV_DIM)
-
         offset += HI_UV_DIM
+
         leafTemp = byteArray.sliceArray(offset until offset + LEAF_TEMP_DIM)
-
         offset += LEAF_TEMP_DIM
+
         extraRad = byteArray.sliceArray(offset until offset + EXTRA_RAD_DIM)
-
         offset += EXTRA_RAD_DIM
+
         newSensors = byteArray.sliceArray(offset until offset + NEW_SENSORS_DIM)
-
         offset += NEW_SENSORS_DIM
+
         forecast = byteArray.sliceArray(offset until offset + FORECAST_DIM)
-
         offset += FORECAST_DIM
+
         ET = byteArray.sliceArray(offset until offset + ET_DIM)
-
         offset += ET_DIM
+
         soilTemp = byteArray.sliceArray(offset until offset + SOIL_TEMP_DIM)
-
         offset += SOIL_TEMP_DIM
+
         soilMoisture = byteArray.sliceArray(offset until offset + SOIL_MOISTURE_DIM)
-
         offset += SOIL_MOISTURE_DIM
+
         leafWetness = byteArray.sliceArray(offset until offset + LEAF_WETNESS_DIM)
-
         offset += LEAF_WETNESS_DIM
-        extraTemp = byteArray.sliceArray(offset until offset + EXTRA_TEMP_DIM)
 
+        extraTemp = byteArray.sliceArray(offset until offset + EXTRA_TEMP_DIM)
         offset += EXTRA_TEMP_DIM
+
         extraHum = byteArray.sliceArray(offset until offset + EXTRA_HUM_DIM)
     }
 

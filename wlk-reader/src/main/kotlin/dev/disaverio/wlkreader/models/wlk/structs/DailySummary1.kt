@@ -44,105 +44,106 @@ class DailySummary1(byteArray: UByteArray) {
         require(DataType[byteArray[0].toInt()] == DataType.DAILY_SUMMARY_1)
 
         var offset = 0
+
         dataType = byteArray.sliceArray(offset until offset + DATA_TYPE_DIM)
-
         offset += DATA_TYPE_DIM
+
         reserved = byteArray.sliceArray(offset until offset + RESERVED_DIM)
-
         offset += RESERVED_DIM
+
         dataSpan = byteArray.sliceArray(offset until offset + DATA_SPAN_DIM)
-
         offset += DATA_SPAN_DIM
+
         hiOutTemp = byteArray.sliceArray(offset until offset + HI_OUT_TEMP_DIM)
-
         offset += HI_OUT_TEMP_DIM
+
         lowOutTemp = byteArray.sliceArray(offset until offset + LOW_OUT_TEMP_DIM)
-
         offset += LOW_OUT_TEMP_DIM
+
         hiInTemp = byteArray.sliceArray(offset until offset + HI_IN_TEMP_DIM)
-
         offset += HI_IN_TEMP_DIM
+
         lowInTemp = byteArray.sliceArray(offset until offset + LOW_IN_TEMP_DIM)
-
         offset += LOW_IN_TEMP_DIM
+
         avgOutTemp = byteArray.sliceArray(offset until offset + AVG_OUT_TEMP_DIM)
-
         offset += AVG_OUT_TEMP_DIM
+
         avgInTemp = byteArray.sliceArray(offset until offset + AVG_IN_TEMP_DIM)
-
         offset += AVG_IN_TEMP_DIM
+
         hiChill = byteArray.sliceArray(offset until offset + HI_CHILL_DIM)
-
         offset += HI_CHILL_DIM
+
         lowChill = byteArray.sliceArray(offset until offset + LOW_CHILL_DIM)
-
         offset += LOW_CHILL_DIM
+
         hiDew = byteArray.sliceArray(offset until offset + HI_DEW_DIM)
-
         offset += HI_DEW_DIM
+
         lowDew = byteArray.sliceArray(offset until offset + LOW_DEW_DIM)
-
         offset += LOW_DEW_DIM
+
         avgChill = byteArray.sliceArray(offset until offset + AVG_CHILL_DIM)
-
         offset += AVG_CHILL_DIM
+
         avgDew = byteArray.sliceArray(offset until offset + AVG_DEW_DIM)
-
         offset += AVG_DEW_DIM
+
         hiOutHum = byteArray.sliceArray(offset until offset + HI_OUT_HUM_DIM)
-
         offset += HI_OUT_HUM_DIM
+
         lowOutHum = byteArray.sliceArray(offset until offset + LOW_OUT_HUM_DIM)
-
         offset += LOW_OUT_HUM_DIM
+
         hiInHum = byteArray.sliceArray(offset until offset + HI_IN_HUM_DIM)
-
         offset += HI_IN_HUM_DIM
+
         lowInHum = byteArray.sliceArray(offset until offset + LOW_IN_HUM_DIM)
-
         offset += LOW_IN_HUM_DIM
+
         avgOutHum = byteArray.sliceArray(offset until offset + AVG_OUT_HUM_DIM)
-
         offset += AVG_OUT_HUM_DIM
+
         hiBar = byteArray.sliceArray(offset until offset + HI_BAR_DIM)
-
         offset += HI_BAR_DIM
+
         lowBar = byteArray.sliceArray(offset until offset + LOW_BAR_DIM)
-
         offset += LOW_BAR_DIM
+
         avgBar = byteArray.sliceArray(offset until offset + AVG_BAR_DIM)
-
         offset += AVG_BAR_DIM
+
         hiSpeed = byteArray.sliceArray(offset until offset + HI_SPEED_DIM)
-
         offset += HI_SPEED_DIM
+
         avgSpeed = byteArray.sliceArray(offset until offset + AVG_SPEED_DIM)
-
         offset += AVG_SPEED_DIM
+
         dailyWindRunTotal = byteArray.sliceArray(offset until offset + DAILY_WIND_RUN_TOTAL_DIM)
-
         offset += DAILY_WIND_RUN_TOTAL_DIM
+
         hi10MinSpeed = byteArray.sliceArray(offset until offset + HI_10_MIN_SPEED_DIM)
-
         offset += HI_10_MIN_SPEED_DIM
+
         dirHiSpeed = byteArray.sliceArray(offset until offset + DIR_HI_SPEED_DIM)
-
         offset += DIR_HI_SPEED_DIM
+
         hi10MinDir = byteArray.sliceArray(offset until offset + HI_10_MIN_DIR_DIM)
-
         offset += HI_10_MIN_DIR_DIM
+
         dailyRainTotal = byteArray.sliceArray(offset until offset + DAILY_RAIN_TOTAL_DIM)
-
         offset += DAILY_RAIN_TOTAL_DIM
+
         hiRainRate = byteArray.sliceArray(offset until offset + HI_RAIN_RATE_DIM)
-
         offset += HI_RAIN_RATE_DIM
+
         dailyUVDose = byteArray.sliceArray(offset until offset + DAILY_UVDOSE_DIM)
-
         offset += DAILY_UVDOSE_DIM
-        hiUV = byteArray.sliceArray(offset until offset + HI_UV_DIM)
 
+        hiUV = byteArray.sliceArray(offset until offset + HI_UV_DIM)
         offset += HI_UV_DIM
+
         timeValues = byteArray.sliceArray(offset until offset + TIME_VALUES_DIM)
     }
 

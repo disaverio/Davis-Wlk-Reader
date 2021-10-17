@@ -10,12 +10,13 @@ class HeaderBlock(byteArray: UByteArray) {
         require(byteArray.size == getDimension())
 
         var offset = 0
+
         idCode = byteArray.sliceArray(offset until offset + ID_CODE_DIM)
-
         offset += ID_CODE_DIM
-        totalRecords = byteArray.sliceArray(offset until offset + TOTAL_RECORDS_DIM)
 
+        totalRecords = byteArray.sliceArray(offset until offset + TOTAL_RECORDS_DIM)
         offset += TOTAL_RECORDS_DIM
+
         dayIndex = getDayIndexList(byteArray.sliceArray(offset until offset + DAY_INDEX_LIST_DIM * DayIndex.getDimension()))
     }
 

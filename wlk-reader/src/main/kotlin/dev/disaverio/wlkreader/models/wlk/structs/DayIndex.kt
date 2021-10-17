@@ -9,9 +9,10 @@ class DayIndex(byteArray: UByteArray) {
         require(byteArray.size == getDimension())
 
         var offset = 0
-        recordsInDay = byteArray.sliceArray(offset until offset + RECORDS_IN_DAY_DIM)
 
+        recordsInDay = byteArray.sliceArray(offset until offset + RECORDS_IN_DAY_DIM)
         offset += RECORDS_IN_DAY_DIM
+
         startPos = byteArray.sliceArray(offset until offset + START_POS_DIM)
     }
 

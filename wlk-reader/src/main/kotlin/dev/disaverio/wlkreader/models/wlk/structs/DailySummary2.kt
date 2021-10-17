@@ -33,72 +33,73 @@ class DailySummary2(byteArray: UByteArray) {
         require(DataType[byteArray[0].toInt()] == DataType.DAILY_SUMMARY_2)
 
         var offset = 0
+
         dataType = byteArray.sliceArray(offset until offset + DATA_TYPE_DIM)
-
         offset += DATA_TYPE_DIM
+
         reserved = byteArray.sliceArray(offset until offset + RESERVED_DIM)
-
         offset += RESERVED_DIM
+
         todaysWeather = byteArray.sliceArray(offset until offset + TODAYS_WEATHER_DIM)
-
         offset += TODAYS_WEATHER_DIM
+
         numWindPackets = byteArray.sliceArray(offset until offset + NUM_WIND_PACKETS_DIM)
-
         offset += NUM_WIND_PACKETS_DIM
+
         hiSolar = byteArray.sliceArray(offset until offset + HI_SOLAR_DIM)
-
         offset += HI_SOLAR_DIM
+
         dailySolarEnergy = byteArray.sliceArray(offset until offset + DAILY_SOLAR_ENERGY_DIM)
-
         offset += DAILY_SOLAR_ENERGY_DIM
+
         minSunlight = byteArray.sliceArray(offset until offset + MIN_SUNLIGHT_DIM)
-
         offset += MIN_SUNLIGHT_DIM
+
         dailyETTotal = byteArray.sliceArray(offset until offset + DAILY_ETTOTAL_DIM)
-
         offset += DAILY_ETTOTAL_DIM
+
         hiHeat = byteArray.sliceArray(offset until offset + HI_HEAT_DIM)
-
         offset += HI_HEAT_DIM
+
         lowHeat = byteArray.sliceArray(offset until offset + LOW_HEAT_DIM)
-
         offset += LOW_HEAT_DIM
+
         avgHeat = byteArray.sliceArray(offset until offset + AVG_HEAT_DIM)
-
         offset += AVG_HEAT_DIM
+
         hiTHSW = byteArray.sliceArray(offset until offset + HI_THSW_DIM)
-
         offset += HI_THSW_DIM
+
         lowTHSW = byteArray.sliceArray(offset until offset + LOW_THSW_DIM)
-
         offset += LOW_THSW_DIM
+
         hiTHW = byteArray.sliceArray(offset until offset + HI_THW_DIM)
-
         offset += HI_THW_DIM
+
         lowTHW = byteArray.sliceArray(offset until offset + LOW_THW_DIM)
-
         offset += LOW_THW_DIM
+
         integratedHeatDD65 = byteArray.sliceArray(offset until offset + INTEGRATED_HEAT_DD_65_DIM)
-
         offset += INTEGRATED_HEAT_DD_65_DIM
+
         hiWetBulb = byteArray.sliceArray(offset until offset + HI_WET_BULB_DIM)
-
         offset += HI_WET_BULB_DIM
+
         lowWetBulb = byteArray.sliceArray(offset until offset + LOW_WET_BULB_DIM)
-
         offset += LOW_WET_BULB_DIM
+
         avgWetBulb = byteArray.sliceArray(offset until offset + AVG_WET_BULB_DIM)
-
         offset += AVG_WET_BULB_DIM
+
         dirBins = byteArray.sliceArray(offset until offset + DIR_BINS_DIM)
-
         offset += DIR_BINS_DIM
+
         timeValues = byteArray.sliceArray(offset until offset + TIME_VALUES_DIM)
-
         offset += TIME_VALUES_DIM
-        integratedCoolDD65 = byteArray.sliceArray(offset until offset + INTEGRATED_COOL_DD_65_DIM)
 
+        integratedCoolDD65 = byteArray.sliceArray(offset until offset + INTEGRATED_COOL_DD_65_DIM)
         offset += INTEGRATED_COOL_DD_65_DIM
+
         reserved2 = byteArray.sliceArray(offset until offset + RESERVED_2_DIM)
     }
 
