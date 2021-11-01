@@ -1,7 +1,7 @@
 Application to translate binary `wlk` files from Davis Weather Instruments, to human-readable `csv` files
 
 ```
-Usage: WlkReader options_list
+Usage: WlkConverter options_list
 Options:
   --inputFilePathList, -i -> Input file path (always required) { String }
   --outputFilePath, -o -> Output file path { String }

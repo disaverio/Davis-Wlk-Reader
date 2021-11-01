@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import kotlin.io.path.isDirectory
 
 fun main(args: Array<String>) {
-    val parser = ArgParser("WlkReader")
+    val parser = ArgParser("WlkConverter")
     val inputFilePathList by parser.option(ArgType.String, shortName = "i", description = "Input file path").required().multiple()
     var outputFilePath by parser.option(ArgType.String, shortName = "o", description = "Output file path")
     val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), shortName = "f", description = "Format for output file").default(OutputFormat.CSV) //.multiple()
