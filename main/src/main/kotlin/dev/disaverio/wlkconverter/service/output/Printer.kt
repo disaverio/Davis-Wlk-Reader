@@ -1,7 +1,7 @@
 package dev.disaverio.wlkconverter.service.output
 
-import dev.disaverio.wlkconverter.models.data.DailySummary
-import dev.disaverio.wlkconverter.models.data.WeatherDataRecord
+import dev.disaverio.wlkreader.models.data.DailySummary
+import dev.disaverio.wlkreader.models.data.WeatherDataRecord
 
 interface Printer {
     fun printDailySummaries(elements: List<DailySummary>, outputPathname: String)

@@ -3,7 +3,7 @@ package dev.disaverio.wlkconverter.service
 import dev.disaverio.wlkconverter.service.output.OutputFormat
 import dev.disaverio.wlkconverter.service.output.Printer
 import dev.disaverio.wlkconverter.service.output.csv.CsvPrinter
-import dev.disaverio.wlkconverter.service.reader.WlkReader
+import dev.disaverio.wlkreader.service.WlkReader
 
 class Service(
     outputPathname: String?,

@@ -1,8 +1,8 @@
 package dev.disaverio.wlkconverter.service.output
 
-import dev.disaverio.wlkconverter.models.data.DailySummary
-import dev.disaverio.wlkconverter.models.data.WeatherDataRecord
 import dev.disaverio.wlkconverter.utils.readFileLines
+import dev.disaverio.wlkreader.models.data.DailySummary
+import dev.disaverio.wlkreader.models.data.WeatherDataRecord
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 

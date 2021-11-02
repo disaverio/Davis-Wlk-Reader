@@ -1,9 +1,9 @@
 package dev.disaverio.wlkconverter.service.output
 
-import dev.disaverio.wlkconverter.models.data.DailySummary
-import dev.disaverio.wlkconverter.models.data.WeatherDataRecord
-import dev.disaverio.wlkconverter.types.*
 import dev.disaverio.wlkconverter.utils.readFileLines
+import dev.disaverio.wlkreader.models.data.DailySummary
+import dev.disaverio.wlkreader.models.data.WeatherDataRecord
+import dev.disaverio.wlkreader.types.*
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockkStatic

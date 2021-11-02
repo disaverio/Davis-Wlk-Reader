@@ -1,9 +1,9 @@
 package dev.disaverio.wlkconverter.service.output.csv
 
-import dev.disaverio.wlkconverter.models.data.DailySummary
-import dev.disaverio.wlkconverter.models.data.WeatherDataRecord
 import dev.disaverio.wlkconverter.service.output.FieldsListPrinter
 import dev.disaverio.wlkconverter.service.output.Printer
+import dev.disaverio.wlkreader.models.data.DailySummary
+import dev.disaverio.wlkreader.models.data.WeatherDataRecord
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter
