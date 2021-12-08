@@ -21,6 +21,11 @@
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
         <kotlin.version>1.5.31</kotlin.version>
         <junit.version>5.8.1</junit.version>
+        <commonscsv.version>1.9.0</commonscsv.version>
+        <iomockk.version>1.12.1</iomockk.version>
+        <kotlinxcli.version>0.3.3</kotlinxcli.version>
+        <mavensurefire.version>2.22.2</mavensurefire.version>
+        <mavenfailsave.version>2.22.2</mavenfailsave.version>
     </properties>
 
     <repositories>
@@ -62,11 +67,11 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>${mavensurefire.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>${mavenfailsave.version}</version>
             </plugin>
         </plugins>
     </build>
@@ -91,12 +96,12 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-cli-jvm</artifactId>
-            <version>0.3.2</version>
+            <version>${kotlinxcli.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.9.0</version>
+            <version>${commonscsv.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -119,7 +124,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
-            <version>1.12.0</version>
+            <version>${iomockk.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -129,7 +134,7 @@
             <dependency>
                 <groupId>dev.disaverio</groupId>
                 <artifactId>wlk-reader</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
