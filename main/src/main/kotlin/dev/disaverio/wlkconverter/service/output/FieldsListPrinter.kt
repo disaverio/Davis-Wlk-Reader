@@ -11,10 +11,21 @@ abstract class FieldsListPrinter(outputFieldsListFilename: String?) {
     private val dailySummaryFields: List<KProperty1<DailySummary, *>>
     private val weatherDataRecordFields: List<KProperty1<WeatherDataRecord, *>>
 
+    protected open val printDailySummaries: Boolean
+        get() = dailySummaryFields.isNotEmpty()
+
+    protected open val printDailyData: Boolean
+        get() = weatherDataRecordFields.isNotEmpty()
+
     init {
-        val fileLines = if (outputFieldsListFilename != null) readFileLines(outputFieldsListFilename) else listOf(null, null)
-        dailySummaryFields = getListOfExpectedPropertiesFromFullListOfProperties(fileLines[0]?.split(","))
-        weatherDataRecordFields = getListOfExpectedPropertiesFromFullListOfProperties(fileLines[1]?.split(","))
+        val fileLines = try {
+            if (outputFieldsListFilename != null) readFileLines(outputFieldsListFilename) else null
+        } catch (e: Exception) {
+            println("Error reading fields list file: ${e.message}.\nAll fields will be printed.")
+            null
+        }
+        dailySummaryFields = getListOfExpectedPropertiesFromFullListOfProperties(if (fileLines == null) null else fileLines[0].split(","))
+        weatherDataRecordFields = getListOfExpectedPropertiesFromFullListOfProperties(if (fileLines == null) null else fileLines[1].split(","))
     }
 
     protected open fun<T> getHeader(elements: List<T>) =

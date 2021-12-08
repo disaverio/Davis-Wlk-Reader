@@ -9,15 +9,18 @@ import kotlin.io.path.isDirectory
 
 fun main(args: Array<String>) {
     val parser = ArgParser("WlkConverter")
-    val inputFilePathList by parser.option(ArgType.String, shortName = "i", description = "Input file path").required().multiple()
-    var outputFilePath by parser.option(ArgType.String, shortName = "o", description = "Output file path")
-    val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), shortName = "f", description = "Format for output file").default(OutputFormat.CSV) //.multiple()
-    val outputFieldsListFilePath by parser.option(ArgType.String, shortName = "p", description = "File containing list of fields printed in output")
+    val inputFilePathList by parser.option(ArgType.String, "input", "i", "Input file path").required().multiple()
+    var outputFilePath by parser.option(ArgType.String, "output", "o", "Output file path")
+    val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), "outputFormat", "f", "Format for output file").default(OutputFormat.CSV) //.multiple()
+    val outputFieldsListFilePath by parser.option(ArgType.String, "fieldsListFile", "p", "File containing list of fields printed in output")
 
     parser.parse(args)
 
     val fileList = getSanitizedFileList(inputFilePathList)
     val service = Service(outputFilePath, outputFormat, outputFieldsListFilePath)
+
+    println("Valid files retrieved:")
+    fileList.forEach { println("  $it") }
 
     fileList.forEach { service.printMonth(it) }
 }

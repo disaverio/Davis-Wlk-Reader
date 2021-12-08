@@ -7,13 +7,13 @@ import dev.disaverio.wlkreader.types.*
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockkStatic
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
@@ -129,140 +129,207 @@ class FieldsListPrinterTest {
         ET = 0.0,
     )
 
+    private val filePath = "fake-file-path"
+    private lateinit var p: FieldsListPrinterExtension
+
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetHeader {
 
-        @Test
-        fun `should return - in the same order - a list of only known property names defined in the 1st line of file pointed by path passed to constructor, when list's elements type is 'DailySummary'`() {
-
-            val filePath = "fake-file-path"
-
+        @BeforeAll
+        fun mockSetup() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
                 dailySummaryProps,
                 weatherDataRecordProps
             )
+            p = FieldsListPrinterExtension(filePath)
+        }
 
-            val p = object : FieldsListPrinter(filePath) {
-                public override fun <T> getHeader(elements: List<T>) = super.getHeader(elements)
-            }
-
+        @Test
+        fun `should return - in the same order - a list of only known property names defined in the 1st line of file pointed by path passed to constructor, when list's elements type is 'DailySummary'`() {
             assertEquals(listOf("lowBarTime", "avgOutTemp", "avgChill", "hiHeatTime"), p.getHeader(listOf(dailySummary)))
         }
 
         @Test
         fun `should return - in the same order - a list of only known property names defined in the 2nd line of file pointed by path passed to constructor, when list's elements type is 'WeatherDataRecord'`() {
-
-            val filePath = "fake-file-path"
-
-            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
-            every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
-
-            val p = object : FieldsListPrinter(filePath) {
-                public override fun <T> getHeader(elements: List<T>) = super.getHeader(elements)
-            }
-
             assertEquals(listOf("outsideTemp", "lowOutsideTemp", "hiRainRate", "insideTemp"), p.getHeader(listOf(weatherDataRecord)))
         }
 
         @Test
         fun `should return empty list as header, when elements list is empty`() {
-
-            val filePath = "fake-file-path"
-
-            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
-            every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
-
-            val p = object : FieldsListPrinter(filePath) {
-                public override fun <T> getHeader(elements: List<T>) = super.getHeader(elements)
-            }
-
             assertTrue { p.getHeader(listOf<DailySummary>()).isEmpty() }
             assertTrue { p.getHeader(listOf<WeatherDataRecord>()).isEmpty() }
         }
 
         @Test
+        fun `should provide full fields list as header, when error occurs trying to open fields list file`() {
+            every { readFileLines(filePath) } throws Exception("whatever")
+            val p = FieldsListPrinterExtension(filePath)
+
+            assertEquals(DailySummary::class.declaredMemberProperties.toList().map { it.name }, p.getHeader(listOf(dailySummary)))
+            assertEquals(WeatherDataRecord::class.declaredMemberProperties.toList().map { it.name }, p.getHeader(listOf(weatherDataRecord)))
+        }
+
+        @Test
+        fun `should provide full fields list as header, when null is passed as fields list file path`() {
+            val p = FieldsListPrinterExtension(null)
+
+            assertEquals(DailySummary::class.declaredMemberProperties.toList().map { it.name }, p.getHeader(listOf(dailySummary)))
+            assertEquals(WeatherDataRecord::class.declaredMemberProperties.toList().map { it.name }, p.getHeader(listOf(weatherDataRecord)))
+        }
+
+        @Test
         fun `should throw Exception, when elements list type is unknown`() {
-
-            val filePath = "fake-file-path"
-
-            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
-            every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
-
-            val p = object : FieldsListPrinter(filePath) {
-                public override fun <T> getHeader(elements: List<T>) = super.getHeader(elements)
-            }
-
             val ex = assertThrows<Exception> { p.getHeader(listOf(0)) }
             assertEquals("Unknown element type.", ex.message)
         }
     }
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetRequestedFields {
-
-        @Test
-        fun `should return - in the same order - a list of values of properties defined in the 1st line of file pointed by path passed to constructor, when list's elements type is 'DailySummary'`() {
-
-            val filePath = "fake-file-path"
-
+        @BeforeAll
+        fun mockSetup() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
                 dailySummaryProps,
                 weatherDataRecordProps
             )
+            p = FieldsListPrinterExtension(filePath)
+        }
 
-            val p = object : FieldsListPrinter(filePath) {
-                public override fun <T> getRequestedFields(elements: List<T>) = super.getRequestedFields(elements)
-            }
-
+        @Test
+        fun `should return - in the same order - a list of values of properties defined in the 1st line of file pointed by path passed to constructor, when list's elements type is 'DailySummary'`() {
             assertEquals(listOf(listOf("13:47", "13.50", "31.50", "18:21")), p.getRequestedFields(listOf(dailySummary)))
         }
 
         @Test
         fun `should return values of properties defined in the 2nd line of file pointed by path passed to constructor, when list's elements type is 'WeatherDataRecord'`() {
-
-            val filePath = "fake-file-path"
-
-            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
-            every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
-
-            val p = object : FieldsListPrinter(filePath) {
-                public override fun <T> getRequestedFields(elements: List<T>) = super.getRequestedFields(elements)
-            }
-
             assertEquals(listOf(listOf("38.00", "32.50", "127.00", "10.00")), p.getRequestedFields(listOf(weatherDataRecord)))
         }
 
         @Test
+        fun `should provide full list of values, when error occurs trying to open fields list file`() {
+            every { readFileLines(filePath) } throws Exception("whatever")
+            val p = FieldsListPrinterExtension(filePath)
+
+            assertEquals(listOf(listOf("0.00", "31.50", "-17.78", "-17.78", "-17.78", "0.0", "13.50", "0.00", "-17.78", "0.0", "0.00", "0.0", "0.0", "0.00", "0", "0001-01-01", "N", "N", "0.00", "00:00", "0.00", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "18:21", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.00", "00:00", "0", "0.00", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "0.00", "0.00", "0.00", "13:47", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "0", "{N=0, S=1}", "0")), p.getRequestedFields(listOf(dailySummary)))
+            assertEquals(listOf(listOf("0.0", "0.0", "0", "0.00", "0001-01-01", "0", "-17.78", "127.00", "0.0", "N", "0.00", "0", "0.0", "10.00", "32.50", "0", "0.0", "38.00", "0", "0.00", "0", "00:00", "N", "0.00")), p.getRequestedFields(listOf(weatherDataRecord)))
+        }
+
+        @Test
+        fun `should provide full list of values, when null is passed as fields list file path`() {
+            val p = FieldsListPrinterExtension(null)
+
+            assertEquals(listOf(listOf("0.00", "31.50", "-17.78", "-17.78", "-17.78", "0.0", "13.50", "0.00", "-17.78", "0.0", "0.00", "0.0", "0.0", "0.00", "0", "0001-01-01", "N", "N", "0.00", "00:00", "0.00", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "18:21", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.00", "00:00", "0", "0.00", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "0.00", "0.00", "0.00", "13:47", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "0", "{N=0, S=1}", "0")), p.getRequestedFields(listOf(dailySummary)))
+            assertEquals(listOf(listOf("0.0", "0.0", "0", "0.00", "0001-01-01", "0", "-17.78", "127.00", "0.0", "N", "0.00", "0", "0.0", "10.00", "32.50", "0", "0.0", "38.00", "0", "0.00", "0", "00:00", "N", "0.00")), p.getRequestedFields(listOf(weatherDataRecord)))
+        }
+
+        @Test
         fun `should throw Exception, when elements list type is unknown`() {
+            val ex = assertThrows<Exception> { p.getRequestedFields(listOf(0)) }
+            assertEquals("Unknown element type.", ex.message)
+        }
+    }
 
-            val filePath = "fake-file-path"
-
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class PrintDailySummaries {
+        @BeforeAll
+        fun mockSetup() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
                 dailySummaryProps,
                 weatherDataRecordProps
             )
+            p = FieldsListPrinterExtension(filePath)
+        }
 
-            val p = object : FieldsListPrinter(filePath) {
-                public override fun <T> getRequestedFields(elements: List<T>) = super.getRequestedFields(elements)
-            }
+        @Test
+        fun `should be true when a list of daily summaries props is provided`() {
+            assertTrue { p.printDailySummaries }
+        }
 
-            val ex = assertThrows<Exception> { p.getRequestedFields(listOf(0)) }
-            assertEquals("Unknown element type.", ex.message)
+        @Test
+        fun `should be true when error occurs trying to open fields list file`() {
+            every { readFileLines(filePath) } throws Exception("whatever")
+            val p = FieldsListPrinterExtension(filePath)
+
+            assertTrue { p.printDailySummaries }
+        }
+
+        @Test
+        fun `should be true when null is passed as fields list file path`() {
+            val p = FieldsListPrinterExtension(null)
+
+            assertTrue { p.printDailySummaries }
+        }
+
+        @Test
+        fun `should be false when first line in fields list file, is empty`() {
+            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
+            every { readFileLines(filePath) } returns listOf(
+                "",
+                weatherDataRecordProps
+            )
+            val p = FieldsListPrinterExtension(filePath)
+
+            assertFalse { p.printDailySummaries }
         }
     }
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class PrintDailyData {
+        @BeforeAll
+        fun mockSetup() {
+            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
+            every { readFileLines(filePath) } returns listOf(
+                dailySummaryProps,
+                weatherDataRecordProps
+            )
+            p = FieldsListPrinterExtension(filePath)
+        }
+
+        @Test
+        fun `should be true when a list of daily data props is provided`() {
+            assertTrue { p.printDailyData }
+        }
+
+        @Test
+        fun `should be true when error occurs trying to open fields list file`() {
+            every { readFileLines(filePath) } throws Exception("whatever")
+            val p = FieldsListPrinterExtension(filePath)
+
+            assertTrue { p.printDailyData }
+        }
+
+        @Test
+        fun `should be true when null is passed as fields list file path`() {
+            val p = FieldsListPrinterExtension(null)
+
+            assertTrue { p.printDailyData }
+        }
+
+        @Test
+        fun `should be false when second line in fields list file, is empty`() {
+            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
+            every { readFileLines(filePath) } returns listOf(
+                dailySummaryProps,
+                ""
+            )
+            val p = FieldsListPrinterExtension(filePath)
+
+            assertFalse { p.printDailyData }
+        }
+    }
+}
+
+
+private class FieldsListPrinterExtension(filePath: String?) : FieldsListPrinter(filePath) {
+    public override fun <T> getHeader(elements: List<T>) = super.getHeader(elements)
+    public override fun <T> getRequestedFields(elements: List<T>) = super.getRequestedFields(elements)
+    public override val printDailySummaries = super.printDailySummaries
+    public override val printDailyData = super.printDailyData
 }
