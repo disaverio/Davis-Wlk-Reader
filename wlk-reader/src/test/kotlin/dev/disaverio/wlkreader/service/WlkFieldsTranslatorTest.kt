@@ -240,12 +240,12 @@ class WlkFieldsTranslatorTest {
             "10100010, 10000101, -3132.6",
             "11111111, 11111111, -0.1"
         )
-        fun `getSpeed should return a Speed object initialized from tenths of Milesph unit, on legit values`(byte1: String, byte2: String, expected: Double) {
+        fun `getSpeed should return a Speed object initialized from tenths of mileperhour unit, on legit values`(byte1: String, byte2: String, expected: Double) {
             val wlkValue = ubyteArrayOf(byte1.toUByte(2), byte2.toUByte(2))
             val result = WlkFieldsTranslator.getSpeed(wlkValue)
 
             assertNotNull(result)
-            assertEquals(expected, result.milesph)
+            assertEquals(expected, result.mileperhour)
         }
     }
 
@@ -330,12 +330,12 @@ class WlkFieldsTranslatorTest {
             "10100010, 10000101, -3132.6",
             "11111111, 11111111, -0.1"
         )
-        fun `getWindRun should return a Distance object initialized from tenths of Miles unit, on legit values`(byte1: String, byte2: String, expected: Double) {
+        fun `getWindRun should return a Length object initialized from tenths of Miles unit, on legit values`(byte1: String, byte2: String, expected: Double) {
             val wlkValue = ubyteArrayOf(byte1.toUByte(2), byte2.toUByte(2))
             val result = WlkFieldsTranslator.getWindRun(wlkValue)
 
             assertNotNull(result)
-            assertEquals(expected, result.miles)
+            assertEquals(expected, result.mile)
         }
     }
 
@@ -362,12 +362,12 @@ class WlkFieldsTranslatorTest {
             "10100010, 10000101, -31.326",
             "11111111, 11111111, -0.001"
         )
-        fun `getPressure should return a Pressure object initialized from thousandths of InHg unit, on legit values`(byte1: String, byte2: String, expected: Double) {
+        fun `getPressure should return a Pressure object initialized from thousandths of inchesofmercury unit, on legit values`(byte1: String, byte2: String, expected: Double) {
             val wlkValue = ubyteArrayOf(byte1.toUByte(2), byte2.toUByte(2))
             val result = WlkFieldsTranslator.getPressure(wlkValue)
 
             assertNotNull(result)
-            assertEquals(expected, result.inHg)
+            assertEquals(expected, result.inchesofmercury)
         }
     }
 
@@ -447,7 +447,7 @@ class WlkFieldsTranslatorTest {
             val result = WlkFieldsTranslator.getPrecipitation(wlkValue)
 
             assertNotNull(result)
-            assertEquals(expected, result.inches)
+            assertEquals(expected, result.inch)
         }
     }
 
@@ -473,7 +473,7 @@ class WlkFieldsTranslatorTest {
             val result = WlkFieldsTranslator.getPrecipitationFromClicksQuantity(wlkValue)
 
             assertNotNull(result)
-            Assert.assertEquals(expected, result.mm, 0.000000001)
+            Assert.assertEquals(expected, result.millimetre, 0.000000001)
         }
     }
 
@@ -494,12 +494,12 @@ class WlkFieldsTranslatorTest {
             "10100010, 10000101, -313.26",
             "11111111, 11111111, -0.01"
         )
-        fun `getRainRate should return a RainRate object initialized from cents of InchesPerHour unit, on legit values`(byte1: String, byte2: String, expected: Double) {
+        fun `getRainRate should return a RainRate object initialized from cents of InchPerHour unit, on legit values`(byte1: String, byte2: String, expected: Double) {
             val wlkValue = ubyteArrayOf(byte1.toUByte(2), byte2.toUByte(2))
             val result = WlkFieldsTranslator.getRainRate(wlkValue)
 
             assertNotNull(result)
-            assertEquals(expected, result.inchesph)
+            assertEquals(expected, result.inchperhour)
         }
     }
 
@@ -528,13 +528,13 @@ class WlkFieldsTranslatorTest {
             "10010110, 00110110, 01010110, 00000001, 342",
             "10010110, 01100110, 01010110, 00000001, 34.2"
         )
-        fun `getRainRateFromClicksNumber should return a RainRate object initialized from MmPerHour unit, on legit values`(byte1: String, byte2: String, byte3: String, byte4: String, expected: Double) {
+        fun `getRainRateFromClicksNumber should return a RainRate object initialized from millimetreperhour unit, on legit values`(byte1: String, byte2: String, byte3: String, byte4: String, expected: Double) {
             val clicksQtyAndCollectorCodeWlkValue = ubyteArrayOf(byte1.toUByte(2), byte2.toUByte(2))
             val clicksPerHour = ubyteArrayOf(byte3.toUByte(2), byte4.toUByte(2))
             val result = WlkFieldsTranslator.getRainRateFromClicksNumber(clicksQtyAndCollectorCodeWlkValue, clicksPerHour)
 
             assertNotNull(result)
-            Assert.assertEquals(expected, result.mmph, 0.000000001)
+            Assert.assertEquals(expected, result.millimetreperhour, 0.000000001)
         }
     }
 

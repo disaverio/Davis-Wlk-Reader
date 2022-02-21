@@ -4,8 +4,10 @@ import dev.disaverio.wlkconverter.service.output.OutputFormat
 import dev.disaverio.wlkconverter.service.output.Printer
 import dev.disaverio.wlkconverter.service.output.csv.CsvPrinter
 import dev.disaverio.wlkreader.service.WlkReader
+import dev.disaverio.wlkreader.types.units.UnitSystem
 
 class Service(
+    unitSystem: UnitSystem?,
     outputPathname: String?,
     outputFormat: OutputFormat?,
     outputFieldsListFilename: String?
@@ -16,7 +18,7 @@ class Service(
 
     init {
         printer = when(format) {
-            OutputFormat.CSV -> CsvPrinter(outputFieldsListFilename)
+            OutputFormat.CSV -> CsvPrinter(unitSystem, outputFieldsListFilename)
         }
     }
 

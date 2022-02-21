@@ -57,7 +57,7 @@ data class DailySummary(
     val dirHiSpeed: WindDirection?,
     val hiSpeedTime: LocalTime?,
     val avgSpeed: Speed?,
-    val dailyWindRunTotal: Distance?,
+    val dailyWindRunTotal: Length?,
     val hi10MinSpeed: Speed?,
     val hi10MinSpeedTime: LocalTime?,
     val hi10MinDir: WindDirection?,

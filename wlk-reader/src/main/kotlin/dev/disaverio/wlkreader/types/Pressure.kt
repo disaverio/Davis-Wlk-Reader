@@ -1,14 +1,23 @@
 package dev.disaverio.wlkreader.types
 
-class Pressure private constructor(val inHg: Double) {
+class Pressure private constructor(val inchesofmercury: Double): TypeWithUnitSystem<Double>() {
 
-    val hPa: Double
-        get() = inHg * (30477498.0 / 900000.0)
+    val hectopascal: Double
+        get() = inchesofmercury * (30477498.0 / 900000.0)
 
-    override fun toString() =
-        String.format("%.2f", hPa)
+    val pascal: Double
+        get() = hectopascal * 100.0
+
+    override fun getDefault() =
+        hectopascal
+
+    override fun getSi() =
+        pascal
+
+    override fun getImperial() =
+        inchesofmercury
 
     companion object {
-        fun fromInHg(value: Double) = Pressure(value)
+        fun fromInchesOfMercury(value: Double) = Pressure(value)
     }
 }

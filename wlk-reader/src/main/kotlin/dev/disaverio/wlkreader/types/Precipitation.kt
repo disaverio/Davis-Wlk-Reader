@@ -1,18 +1,24 @@
 package dev.disaverio.wlkreader.types
 
-class Precipitation private constructor(private val _inches: Double? = null, private val _mm: Double? = null) {
+class Precipitation private constructor(private val _inch: Double? = null, private val _millimetre: Double? = null): TypeWithUnitSystem<Double>() {
 
-    val inches: Double
-        get() = _inches ?: (mm / 25.4)
+    val inch: Double
+        get() = _inch ?: (millimetre / 25.4)
 
-    val mm: Double
-        get() = _mm ?: (inches * 25.4)
+    val millimetre: Double
+        get() = _millimetre ?: (inch * 25.4)
 
-    override fun toString() =
-        String.format("%.2f", mm)
+    override fun getDefault() =
+        millimetre
+
+    override fun getSi() =
+        millimetre
+
+    override fun getImperial() =
+        inch
 
     companion object {
-        fun fromInches(value: Double) = Precipitation(_inches = value)
-        fun fromMm(value: Double) = Precipitation(_mm = value)
+        fun fromInch(value: Double) = Precipitation(_inch = value)
+        fun fromMillimetre(value: Double) = Precipitation(_millimetre = value)
     }
 }

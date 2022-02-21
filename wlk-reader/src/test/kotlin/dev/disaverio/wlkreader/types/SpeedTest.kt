@@ -12,11 +12,11 @@ class SpeedTest {
         "3.597, 5.788810368, 1.60800288",
         "0, 0, 0"
     )
-    fun `fromMilesph should correctly store milesPerHour and convert to other units`(milesPerHour: Double, kmPerHour: Double, mPerSecond: Double) {
-        val speed = Speed.fromMilesph(milesPerHour)
+    fun `fromMilePerHour should correctly store milesPerHour and convert to other units`(milePerHour: Double, kilometrePerHour: Double, metrePerSecond: Double) {
+        val speed = Speed.fromMilePerHour(milePerHour)
 
-        Assert.assertEquals(milesPerHour, speed.milesph, 0.000000001)
-        Assert.assertEquals(kmPerHour, speed.kmph, 0.000000001)
-        Assert.assertEquals(mPerSecond, speed.mps, 0.000000001)
+        Assert.assertEquals(milePerHour, speed.mileperhour, 0.000000001)
+        Assert.assertEquals(kilometrePerHour, speed.kilometreperhour, 0.000000001)
+        Assert.assertEquals(metrePerSecond, speed.metrepersecond, 0.000000001)
     }
 }

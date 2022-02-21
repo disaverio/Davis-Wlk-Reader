@@ -3,10 +3,13 @@ package dev.disaverio.wlkconverter.service.output
 import dev.disaverio.wlkconverter.utils.readFileLines
 import dev.disaverio.wlkreader.models.data.DailySummary
 import dev.disaverio.wlkreader.models.data.WeatherDataRecord
+import dev.disaverio.wlkreader.types.Temperature
+import dev.disaverio.wlkreader.types.TypeWithUnitSystem
+import dev.disaverio.wlkreader.types.units.UnitSystem
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
-abstract class FieldsListPrinter(outputFieldsListFilename: String?) {
+abstract class FieldsListPrinter(private val unitSystem: UnitSystem? = null, outputFieldsListFilename: String?) {
 
     private val dailySummaryFields: List<KProperty1<DailySummary, *>>
     private val weatherDataRecordFields: List<KProperty1<WeatherDataRecord, *>>
@@ -44,7 +47,12 @@ abstract class FieldsListPrinter(outputFieldsListFilename: String?) {
         }
 
     private fun<T> getRequestedFieldsBasedOnRequestedPropertiesList(elements: List<T>, requiredPropertiesList: List<KProperty1<T, *>>) =
-        elements.map { el -> requiredPropertiesList.map { it.get(el).toString() } }
+        elements.map {
+            el -> requiredPropertiesList.map {
+                val field = it.get(el)
+                if (field is TypeWithUnitSystem<*>) field.toString(unitSystem) else field.toString()
+            }
+        }
 
     private inline fun<reified T: Any> getListOfExpectedPropertiesFromFullListOfProperties(namesListOfExpectedProperties: List<String>?): List<KProperty1<T, *>>  {
         val fullPropertiesList = T::class.declaredMemberProperties.toList()

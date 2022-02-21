@@ -1,20 +1,26 @@
 package dev.disaverio.wlkreader.types
 
-class Speed private constructor(private val distance: Distance) {
+class Speed private constructor(private val length: Length): TypeWithUnitSystem<Double>() {
 
-    val milesph: Double
-        get() = distance.miles
+    val mileperhour: Double
+        get() = length.mile
 
-    val kmph: Double
-        get() = distance.kilometers
+    val kilometreperhour: Double
+        get() = length.kilometre
 
-    val mps: Double
-        get() = distance.meters / 3600.0
+    val metrepersecond: Double
+        get() = length.metre / 3600.0
 
-    override fun toString() =
-        String.format("%.2f", kmph)
+    override fun getDefault() =
+        kilometreperhour
+
+    override fun getSi() =
+        metrepersecond
+
+    override fun getImperial() =
+        mileperhour
 
     companion object {
-        fun fromMilesph(value: Double) = Speed(Distance.fromMiles(value))
+        fun fromMilePerHour(value: Double) = Speed(Length.fromMile(value))
     }
 }

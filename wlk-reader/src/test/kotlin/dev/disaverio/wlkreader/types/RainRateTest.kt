@@ -12,11 +12,11 @@ class RainRateTest {
         "3.597, 91.3638",
         "0, 0"
     )
-    fun `fromInchesPerHour should correctly store inchesPerHour and convert to other units`(inchesPerHour: Double, mmPerHour: Double) {
-        val rainRate = RainRate.fromInchesPerHour(inchesPerHour)
+    fun `fromInchPerHour should correctly store inchperhour and convert to other units`(inchPerHour: Double, millimetrePerHour: Double) {
+        val rainRate = RainRate.fromInchPerHour(inchPerHour)
 
-        Assert.assertEquals(inchesPerHour, rainRate.inchesph, 0.000000001)
-        Assert.assertEquals(mmPerHour, rainRate.mmph, 0.000000001)
+        Assert.assertEquals(inchPerHour, rainRate.inchperhour, 0.000000001)
+        Assert.assertEquals(millimetrePerHour, rainRate.millimetreperhour, 0.000000001)
     }
 
     @ParameterizedTest
@@ -25,10 +25,10 @@ class RainRateTest {
         "3.597, 91.3638",
         "0, 0"
     )
-    fun `fromMmPerHour should correctly store mmPerHour and convert to other units`(inchesPerHour: Double, mmPerHour: Double) {
-        val rainRate = RainRate.fromMmPerHour(mmPerHour)
+    fun `fromMillimetrePerHour should correctly store millimetreperhour and convert to other units`(inchPerHour: Double, millimetrePerHour: Double) {
+        val rainRate = RainRate.fromMillimetrePerHour(millimetrePerHour)
 
-        Assert.assertEquals(mmPerHour, rainRate.mmph, 0.000000001)
-        Assert.assertEquals(inchesPerHour, rainRate.inchesph, 0.000000001)
+        Assert.assertEquals(millimetrePerHour, rainRate.millimetreperhour, 0.000000001)
+        Assert.assertEquals(inchPerHour, rainRate.inchperhour, 0.000000001)
     }
 }

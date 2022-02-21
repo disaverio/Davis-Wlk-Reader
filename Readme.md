@@ -5,6 +5,7 @@ Usage: WlkConverter options_list
 Options:
   --input, -i -> Input file path (always required) { String }
   --output, -o -> Output file path { String }
+  --unit, -u [SI, IMPERIAL] -> Unit system used for values in the printed output
   --outputFormat, -f [CSV] -> Format for output file { Value should be one of [csv] }
   --fieldsListFile, -p -> File containing list of fields printed in output { String }
   --help, -h -> Usage info
@@ -18,8 +19,8 @@ Options:
     - `-i /path/to/my/wlk/folder -i /path/to/another/wlk/folder`
     - `-i /path/to/my/wlk/folder -i /path/to/my/2021-01.wlk -i /path/to/my/2021-02.wlk -i /path/to/another/wlk/folder`
 3. `-o` is optional: if no path is provided the output will be printed in two files named `DailySummary_${yyyy}-${mm}.${ext}` and `DailyData_${yyyy}-${mm}.${ext}`. Note: prefixes `DailySummary_${yyyy}-${mm}` and `DailyData_${yyyy}-${mm}` are always prepended to provided filenames.
-4. `-f`: at the moment is **not used**, since only `csv` is supported as output format
-5. `-p` is optional: path to text files with two lines containing comma separated fields to be printed in output. **First line** contains fields for Daily Summary output, **second line** contains fields for Daily Data output. **If no path is provided** all the fields will be printed. If first line is empty, then only Daily Data is printed. If second line is empty then only Daily Summaries are printed.
+5. `-f`: at the moment is **not used**, since only `csv` is supported as output format
+6. `-p` is optional: path to text files with two lines containing comma separated fields to be printed in output. **First line** contains fields for Daily Summary output, **second line** contains fields for Daily Data output. **If no path is provided** all the fields will be printed. If first line is empty, then only Daily Data is printed. If second line is empty then only Daily Summaries are printed.
 
    Available fields (here grouped by affinity for reading convenience):
    - **Daily Summary** fields:

@@ -50,7 +50,7 @@ class WlkFieldsTranslator private constructor() {
 
         fun getSpeed(speed: UByteArray): Speed? {
             require(speed.size == 2)
-            return if (speed.toShort() == Short.MIN_VALUE) null else Speed.fromMilesph(getDimensionlessValueFromTenths(speed))
+            return if (speed.toShort() == Short.MIN_VALUE) null else Speed.fromMilePerHour(getDimensionlessValueFromTenths(speed))
         }
 
         fun getWindDirection(windDirection: UByteArray): WindDirection? {
@@ -59,14 +59,14 @@ class WlkFieldsTranslator private constructor() {
             return if (directionCode == 255) null else WindDirection[directionCode * 22.5]
         }
 
-        fun getWindRun(windRun: UByteArray): Distance? {
+        fun getWindRun(windRun: UByteArray): Length? {
             require(windRun.size == 2)
-            return if (windRun.toShort() == Short.MIN_VALUE) null else Distance.fromMiles(getDimensionlessValueFromTenths(windRun))
+            return if (windRun.toShort() == Short.MIN_VALUE) null else Length.fromMile(getDimensionlessValueFromTenths(windRun))
         }
 
         fun getPressure(pressure: UByteArray): Pressure? {
             require(pressure.size == 2)
-            return if (pressure.toShort() == Short.MIN_VALUE) null else Pressure.fromInHg(getDimensionlessValueFromThousandths(pressure))
+            return if (pressure.toShort() == Short.MIN_VALUE) null else Pressure.fromInchesOfMercury(getDimensionlessValueFromThousandths(pressure))
         }
 
         fun getUvIndex(uvIndex: UByteArray): Double {
@@ -81,26 +81,26 @@ class WlkFieldsTranslator private constructor() {
 
         fun getPrecipitation(precipitation: UByteArray): Precipitation {
             require(precipitation.size == 2)
-            return Precipitation.fromInches(getDimensionlessValueFromThousandths(precipitation))
+            return Precipitation.fromInch(getDimensionlessValueFromThousandths(precipitation))
         }
 
         fun getPrecipitationFromClicksQuantity(clicksQtyAndCollectorCode: UByteArray): Precipitation {
             require(clicksQtyAndCollectorCode.size == 2)
             val collectorType = RainCollectorType[clicksQtyAndCollectorCode.toShort().toInt() and 0xF000]
             val clicksQty = clicksQtyAndCollectorCode.toShort().toInt() and 0x0FFF
-            return Precipitation.fromMm(clicksQty * collectorType.dimensionInMm)
+            return Precipitation.fromMillimetre(clicksQty * collectorType.dimensionInMm)
         }
 
         fun getRainRate(rainRate: UByteArray): RainRate {
             require(rainRate.size == 2)
-            return RainRate.fromInchesPerHour(getDimensionlessValueFromCents(rainRate))
+            return RainRate.fromInchPerHour(getDimensionlessValueFromCents(rainRate))
         }
 
         fun getRainRateFromClicksNumber(clicksQtyAndCollectorCode: UByteArray, clicksPerHour: UByteArray): RainRate {
             require(clicksQtyAndCollectorCode.size == 2)
             require(clicksPerHour.size == 2)
             val collectorType = RainCollectorType[clicksQtyAndCollectorCode.toShort().toInt() and 0xF000]
-            return RainRate.fromMmPerHour(getDimensionlessValue(clicksPerHour) * collectorType.dimensionInMm)
+            return RainRate.fromMillimetrePerHour(getDimensionlessValue(clicksPerHour) * collectorType.dimensionInMm)
         }
 
         fun getDeltaTemperature(temperature: UByteArray): DeltaTemperature? {

@@ -8,14 +8,15 @@ class PressureTest {
 
     @ParameterizedTest
     @CsvSource(
-        "1, 33.863886666",
-        "3.597, 121.808400339",
+        "1, 33.863886666, 3386.3886666",
+        "3.597, 121.808400339, 12180.8400339",
         "0, 0, 0"
     )
-    fun `fromInHg should correctly store inHg and convert to other units`(inHg: Double, hPa: Double) {
-        val pressure = Pressure.fromInHg(inHg)
+    fun `fromInchesOfMercury should correctly store inchesofmercury and convert to other units`(inchesofmercury: Double, hectopascal: Double, pascal: Double) {
+        val pressure = Pressure.fromInchesOfMercury(inchesofmercury)
 
-        Assert.assertEquals(inHg, pressure.inHg, 0.000000001)
-        Assert.assertEquals(hPa, pressure.hPa, 0.000000001)
+        Assert.assertEquals(inchesofmercury, pressure.inchesofmercury, 0.0000001)
+        Assert.assertEquals(hectopascal, pressure.hectopascal, 0.0000001)
+        Assert.assertEquals(pascal, pressure.pascal, 0.0000001)
     }
 }

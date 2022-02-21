@@ -12,11 +12,11 @@ class PrecipitationTest {
         "3.597, 91.3638",
         "0, 0"
     )
-    fun `fromInches should correctly store inches and convert to other units`(inches: Double, mm: Double) {
-        val precipitation = Precipitation.fromInches(inches)
+    fun `fromInch should correctly store inch and convert to other units`(inch: Double, millimetre: Double) {
+        val precipitation = Precipitation.fromInch(inch)
 
-        Assert.assertEquals(inches, precipitation.inches, 0.000000001)
-        Assert.assertEquals(mm, precipitation.mm, 0.000000001)
+        Assert.assertEquals(inch, precipitation.inch, 0.000000001)
+        Assert.assertEquals(millimetre, precipitation.millimetre, 0.000000001)
     }
 
     @ParameterizedTest
@@ -25,10 +25,10 @@ class PrecipitationTest {
         "3.597, 91.3638",
         "0, 0"
     )
-    fun `fromMm should correctly store mm and convert to other units`(inches: Double, mm: Double) {
-        val precipitation = Precipitation.fromMm(mm)
+    fun `fromMillimetre should correctly store millimetre and convert to other units`(inch: Double, millimetre: Double) {
+        val precipitation = Precipitation.fromMillimetre(millimetre)
 
-        Assert.assertEquals(mm, precipitation.mm, 0.000000001)
-        Assert.assertEquals(inches, precipitation.inches, 0.000000001)
+        Assert.assertEquals(millimetre, precipitation.millimetre, 0.000000001)
+        Assert.assertEquals(inch, precipitation.inch, 0.000000001)
     }
 }

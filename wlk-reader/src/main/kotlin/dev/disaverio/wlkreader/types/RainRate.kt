@@ -1,18 +1,24 @@
 package dev.disaverio.wlkreader.types
 
-class RainRate private constructor(private val precipitation: Precipitation) {
+class RainRate private constructor(private val precipitation: Precipitation): TypeWithUnitSystem<Double>() {
 
-    val inchesph: Double
-        get() = precipitation.inches
+    val inchperhour: Double
+        get() = precipitation.inch
 
-    val mmph: Double
-        get() = precipitation.mm
+    val millimetreperhour: Double
+        get() = precipitation.millimetre
 
-    override fun toString() =
-        String.format("%.2f", mmph)
+    override fun getDefault() =
+        millimetreperhour
+
+    override fun getSi() =
+        millimetreperhour
+
+    override fun getImperial() =
+        inchperhour
 
     companion object {
-        fun fromInchesPerHour(value: Double) = RainRate(Precipitation.fromInches(value))
-        fun fromMmPerHour(value: Double) = RainRate(Precipitation.fromMm(value))
+        fun fromInchPerHour(value: Double) = RainRate(Precipitation.fromInch(value))
+        fun fromMillimetrePerHour(value: Double) = RainRate(Precipitation.fromMillimetre(value))
     }
 }
