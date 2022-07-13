@@ -30,6 +30,7 @@ class WlkReader private constructor() {
             headerBlock.dayIndex.withIndex().forEach { (dayNumber, dayIndex) ->
 
                 if (dayNumber == 0) return@forEach
+                if (dayIndex.recordsInDay.toShort() == 0.toShort()) return@forEach
 
                 var offset = HeaderBlock.getDimension() + dayIndex.startPos.toInt() * WeatherDataRecord.getDimension()
 

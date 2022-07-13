@@ -19,11 +19,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
-        <kotlin.version>1.5.31</kotlin.version>
+        <kotlin.version>1.7.0</kotlin.version>
         <junit.version>5.8.2</junit.version>
         <commonscsv.version>1.9.0</commonscsv.version>
-        <iomockk.version>1.12.1</iomockk.version>
-        <kotlinxcli.version>0.3.3</kotlinxcli.version>
+        <iomockk.version>1.12.4</iomockk.version>
+        <kotlinxcli.version>0.3.4</kotlinxcli.version>
         <mavensurefire.version>2.22.2</mavensurefire.version>
         <mavenfailsave.version>2.22.2</mavenfailsave.version>
     </properties>
@@ -63,6 +63,14 @@
                     <args>
                         <arg>-Xopt-in=kotlin.ExperimentalUnsignedTypes</arg>
                     </args>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
             <plugin>
