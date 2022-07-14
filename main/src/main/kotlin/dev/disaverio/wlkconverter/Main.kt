@@ -11,7 +11,7 @@ import kotlin.io.path.isDirectory
 fun main(args: Array<String>) {
     val parser = ArgParser("WlkConverter")
     val inputFilePathList by parser.option(ArgType.String, "input", "i", "Input file path").required().multiple()
-    val outputFilePath by parser.option(ArgType.String, "output", "o", "Output file path")
+    val outputFolderPath by parser.option(ArgType.String, "output", "o", "Output folder path")
     val unitSystem by parser.option(ArgType.Choice<UnitSystem>(), "unit", "u", "Unit system used for values in the printed output")
     val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), "outputFormat", "f", "Format for output file").default(OutputFormat.CSV) //.multiple()
     val outputFieldsListFilePath by parser.option(ArgType.String, "fieldsListFile", "p", "Path to file containing list of fields printed in output")
@@ -19,7 +19,8 @@ fun main(args: Array<String>) {
     parser.parse(args)
 
     val fileList = getSanitizedFileList(inputFilePathList)
-    val service = Service(unitSystem, outputFilePath, outputFormat, outputFieldsListFilePath)
+    val checkedOutputFolderPath = getOutputFolderPath(outputFolderPath)
+    val service = Service(unitSystem, outputFieldsListFilePath, checkedOutputFolderPath, outputFormat)
 
     println("Valid files retrieved:")
     fileList.forEach { println("  $it") }
@@ -27,7 +28,7 @@ fun main(args: Array<String>) {
     fileList.forEach { service.printMonth(it) }
 }
 
-fun getSanitizedFileList(inputFilePathList: List<String>): List<String> {
+private fun getSanitizedFileList(inputFilePathList: List<String>): List<String> {
     val filenameRegex = Regex("\\d{4}-\\d{2}\\.wlk")
     val list = mutableListOf<String>()
 
@@ -49,4 +50,16 @@ fun getSanitizedFileList(inputFilePathList: List<String>): List<String> {
     }
 
     return list
+}
+
+private fun getOutputFolderPath(outputFolder: String?): String {
+    if (outputFolder == null) {
+        return Paths.get("").toAbsolutePath().toString()
+    }
+    if (!Paths.get(outputFolder).isDirectory()) {
+        println("Specified output folder is not a folder. Current folder will be used to save output files.")
+        return Paths.get("").toAbsolutePath().toString()
+    }
+
+    return Paths.get(outputFolder).toAbsolutePath().toString()
 }

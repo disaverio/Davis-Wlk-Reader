@@ -8,40 +8,23 @@ import dev.disaverio.wlkreader.types.units.UnitSystem
 
 class Service(
     unitSystem: UnitSystem?,
-    outputPathname: String?,
-    outputFormat: OutputFormat?,
-    outputFieldsListFilename: String?
+    outputFieldsListFilename: String?,
+    private val outputFolderPath: String,
+    private val outputFormat: OutputFormat
 ) {
     private val printer: Printer
-    private val format: OutputFormat = outputFormat ?: OutputFormat.CSV
-    private val outPathname = outputPathname ?: ".${format.fileExt}"
 
     init {
-        printer = when(format) {
+        printer = when(outputFormat) {
             OutputFormat.CSV -> CsvPrinter(unitSystem, outputFieldsListFilename)
         }
     }
 
     fun printMonth(inputPathname: String) {
         val yearmonth = inputPathname.split("/").last().split(".").first()
-        val dailySummaryPathname = getDailySummaryPathname(yearmonth, outPathname)
-        val dailyDataPathname = getDailyDataPathname(yearmonth, outPathname)
 
         val monthData = WlkReader.readMonthlyFile(inputPathname)
-        printer.printDailySummaries(monthData.dailyData.map { it.summary }, dailySummaryPathname)
-        printer.printDailyData(monthData.dailyData.map { it.records }.flatten(), dailyDataPathname)
-    }
-
-    private fun getDailySummaryPathname(prefix: String, pathname: String) =
-        getChangedFilename("DailySummary_$prefix", pathname)
-
-    private fun getDailyDataPathname(prefix: String, pathname: String) =
-        getChangedFilename("DailyData_$prefix", pathname)
-
-    private fun getChangedFilename(prefix: String, pathname: String): String {
-        val tokens = pathname.split("/").toMutableList()
-        val filename = tokens.removeLast()
-        tokens.add("$prefix$filename")
-        return tokens.joinToString("/")
+        printer.printDailySummaries(monthData.dailyData.map { it.summary }, "$outputFolderPath/DailySummary_$yearmonth.${outputFormat.fileExt}")
+        printer.printDailyData(monthData.dailyData.map { it.records }.flatten(), "$outputFolderPath/DailyData_$yearmonth.${outputFormat.fileExt}")
     }
 }

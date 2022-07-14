@@ -4,7 +4,7 @@ Application to translate binary `wlk` files from Davis Weather Instruments, to h
 Usage: WlkConverter options_list
 Options:
     --input, -i -> Input file path (always required) { String }
-    --output, -o -> Output file path { String }
+    --output, -o -> Output folder path { String }
     --unit, -u -> Unit system used for values in the printed output { Value should be one of [si, imperial] }
     --outputFormat, -f [CSV] -> Format for output file { Value should be one of [csv] }
     --fieldsListFile, -p -> Path to file containing list of fields printed in output { String }
@@ -18,7 +18,7 @@ Options:
     - `-i /path/to/my/wlk/folder`
     - `-i /path/to/my/wlk/folder -i /path/to/another/wlk/folder`
     - `-i /path/to/my/wlk/folder -i /path/to/my/2021-01.wlk -i /path/to/my/2021-02.wlk -i /path/to/another/wlk/folder`
-3. `-o` is optional: if no path is provided the output will be printed in two files named `DailySummary_${yyyy}-${mm}.${ext}` and `DailyData_${yyyy}-${mm}.${ext}`. Note: prefixes `DailySummary_${yyyy}-${mm}` and `DailyData_${yyyy}-${mm}` are always prepended to provided filenames.
+3. `-o` is optional: if no path is provided the output will be saved in the current folder. Output files are always named as `DailySummary_${yyyy}-${mm}.${ext}` and `DailyData_${yyyy}-${mm}.${ext}`.
 4. `-u` is optional. Used to choose between International Unit System, and Imperial Unit System in the printed output. If it is not provided default values.
    
    **Default values**: `Length:kilometre`, `Precipitation:millimetre`, `Pressure:hectopascal`, `RainRate:millimetreperhour`, `Speed:kilometreperhour`, `Temperature:celsius`
