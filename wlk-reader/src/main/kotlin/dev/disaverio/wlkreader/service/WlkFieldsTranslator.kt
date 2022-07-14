@@ -3,6 +3,8 @@ package dev.disaverio.wlkreader.service
 import dev.disaverio.wlkreader.types.*
 import dev.disaverio.wlkreader.utils.toShort
 import dev.disaverio.wlkreader.utils.toUShort
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 class WlkFieldsTranslator private constructor() {
@@ -108,9 +110,9 @@ class WlkFieldsTranslator private constructor() {
             return if (temperature.toShort() == Short.MIN_VALUE) null else DeltaTemperature.fromFahrenheit(getDimensionlessValueFromTenths(temperature))
         }
 
-        fun getRecordTime(packedTime: UByteArray): LocalTime {
+        fun getDateTime(date: LocalDate, packedTime: UByteArray): LocalDateTime {
             require(packedTime.size == 2)
-            return getTimeFromPackedtime(getDimensionlessValue(packedTime))
+            return date.atStartOfDay().plusMinutes(getDimensionlessValue(packedTime).toLong())
         }
 
         fun getArchiveInterval(archiveInterval: UByteArray): Int {
@@ -123,124 +125,124 @@ class WlkFieldsTranslator private constructor() {
             return evapotranspiration[0].toInt() / 1000.0
         }
 
-        fun getHiOutTempTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiOutTempTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(0, ds1TimeValues)
+            return getTimeFromTimeValues(0, date, ds1TimeValues)
         }
 
-        fun getLowOutTempTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getLowOutTempTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(1, ds1TimeValues)
+            return getTimeFromTimeValues(1, date, ds1TimeValues)
         }
 
-        fun getHiInTempTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiInTempTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(2, ds1TimeValues)
+            return getTimeFromTimeValues(2, date, ds1TimeValues)
         }
 
-        fun getLowInTempTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getLowInTempTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(3, ds1TimeValues)
+            return getTimeFromTimeValues(3, date, ds1TimeValues)
         }
 
-        fun getHiChillTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiChillTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(4, ds1TimeValues)
+            return getTimeFromTimeValues(4, date, ds1TimeValues)
         }
 
-        fun getLowChillTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getLowChillTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(5, ds1TimeValues)
+            return getTimeFromTimeValues(5, date, ds1TimeValues)
         }
 
-        fun getHiDewTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiDewTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(6, ds1TimeValues)
+            return getTimeFromTimeValues(6, date, ds1TimeValues)
         }
 
-        fun getLowDewTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getLowDewTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(7, ds1TimeValues)
+            return getTimeFromTimeValues(7, date, ds1TimeValues)
         }
 
-        fun getHiOutHumTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiOutHumTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(8, ds1TimeValues)
+            return getTimeFromTimeValues(8, date, ds1TimeValues)
         }
 
-        fun getLowOutHumTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getLowOutHumTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(9, ds1TimeValues)
+            return getTimeFromTimeValues(9, date, ds1TimeValues)
         }
 
-        fun getHiInHumTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiInHumTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(10, ds1TimeValues)
+            return getTimeFromTimeValues(10, date, ds1TimeValues)
         }
 
-        fun getLowInHumTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getLowInHumTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(11, ds1TimeValues)
+            return getTimeFromTimeValues(11, date, ds1TimeValues)
         }
 
-        fun getHiBarTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiBarTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(12, ds1TimeValues)
+            return getTimeFromTimeValues(12, date, ds1TimeValues)
         }
 
-        fun getLowBarTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getLowBarTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(13, ds1TimeValues)
+            return getTimeFromTimeValues(13, date, ds1TimeValues)
         }
 
-        fun getHiSpeedTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiSpeedTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(14, ds1TimeValues)
+            return getTimeFromTimeValues(14, date, ds1TimeValues)
         }
 
-        fun getHi10MinSpeedTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHi10MinSpeedTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(15, ds1TimeValues)
+            return getTimeFromTimeValues(15, date, ds1TimeValues)
         }
 
-        fun getHiRainRateTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiRainRateTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(16, ds1TimeValues)
+            return getTimeFromTimeValues(16, date, ds1TimeValues)
         }
 
-        fun getHiUVTime(ds1TimeValues: UByteArray): LocalTime? {
+        fun getHiUVTime(date: LocalDate, ds1TimeValues: UByteArray): LocalDateTime? {
             require(ds1TimeValues.size == 27)
-            return getTimeFromTimeValues(17, ds1TimeValues)
+            return getTimeFromTimeValues(17, date, ds1TimeValues)
         }
 
-        fun getHiHeatTime(ds2TimeValues: UByteArray): LocalTime? {
+        fun getHiHeatTime(date: LocalDate, ds2TimeValues: UByteArray): LocalDateTime? {
             require(ds2TimeValues.size == 15)
-            return getTimeFromTimeValues(1, ds2TimeValues)
+            return getTimeFromTimeValues(1, date, ds2TimeValues)
         }
 
-        fun getLowHeatTime(ds2TimeValues: UByteArray): LocalTime? {
+        fun getLowHeatTime(date: LocalDate, ds2TimeValues: UByteArray): LocalDateTime? {
             require(ds2TimeValues.size == 15)
-            return getTimeFromTimeValues(2, ds2TimeValues)
+            return getTimeFromTimeValues(2, date, ds2TimeValues)
         }
 
-        fun getHiTHSWTime(ds2TimeValues: UByteArray): LocalTime? {
+        fun getHiTHSWTime(date: LocalDate, ds2TimeValues: UByteArray): LocalDateTime? {
             require(ds2TimeValues.size == 15)
-            return getTimeFromTimeValues(3, ds2TimeValues)
+            return getTimeFromTimeValues(3, date, ds2TimeValues)
         }
 
-        fun getLowTHSWTime(ds2TimeValues: UByteArray): LocalTime? {
+        fun getLowTHSWTime(date: LocalDate, ds2TimeValues: UByteArray): LocalDateTime? {
             require(ds2TimeValues.size == 15)
-            return getTimeFromTimeValues(4, ds2TimeValues)
+            return getTimeFromTimeValues(4, date, ds2TimeValues)
         }
 
-        fun getHiTHWTime(ds2TimeValues: UByteArray): LocalTime? {
+        fun getHiTHWTime(date: LocalDate, ds2TimeValues: UByteArray): LocalDateTime? {
             require(ds2TimeValues.size == 15)
-            return getTimeFromTimeValues(5, ds2TimeValues)
+            return getTimeFromTimeValues(5, date, ds2TimeValues)
         }
 
-        fun getLowTHWTime(ds2TimeValues: UByteArray): LocalTime? {
+        fun getLowTHWTime(date: LocalDate, ds2TimeValues: UByteArray): LocalDateTime? {
             require(ds2TimeValues.size == 15)
-            return getTimeFromTimeValues(6, ds2TimeValues)
+            return getTimeFromTimeValues(6, date, ds2TimeValues)
         }
 
         fun getMinutesAsDominantDirection(direction: WindDirection, ds2DirBins: UByteArray): Int {
@@ -265,9 +267,13 @@ class WlkFieldsTranslator private constructor() {
             return getAmountOfMinutes(index, ds2DirBins) ?: 0
         }
 
-        private fun getTimeFromTimeValues(index: Int, timeValues: UByteArray): LocalTime? {
+        private fun getTimeFromTimeValues(index: Int, date: LocalDate, timeValues: UByteArray): LocalDateTime? {
             val minutesAfterMidnight = getAmountOfMinutes(index, timeValues)
-            return if (minutesAfterMidnight == null) null else getTimeFromPackedtime(minutesAfterMidnight)
+            return if (minutesAfterMidnight == null) {
+                null
+            } else {
+                date.atStartOfDay().plusMinutes(minutesAfterMidnight.toLong())
+            }
         }
 
         private fun getAmountOfMinutes(index: Int, minutesAmounts: UByteArray): Int? {
@@ -278,16 +284,6 @@ class WlkFieldsTranslator private constructor() {
                 minutesAmounts[fieldIndex + 1].toInt() + (minutesAmounts[fieldIndex + 2].toInt() and 0xF0 shl 4)
             }
             return if (minutes == 0x0FFF || minutes == 0x07FF || minutes == 0x0800) null else minutes
-        }
-
-        private fun getTimeFromPackedtime(packedTime: Int): LocalTime {
-            // Davis Weather Instruments mistakenly consider as a day, the interval that spans from 00:01 to 24:00,
-            // while the right interval is from 00:00 to 23:59.
-            // This is why I'm decreasing the time of 1 minute -> TODO replace with a more precise solution?
-            val minutesAfterMidnight = packedTime - 1
-            val hourOfDay = minutesAfterMidnight / 60
-            val minuteOfHour = minutesAfterMidnight % 60
-            return LocalTime.of(hourOfDay, minuteOfHour)
         }
     }
 }

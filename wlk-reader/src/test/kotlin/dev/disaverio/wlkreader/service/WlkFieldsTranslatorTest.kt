@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.MethodSource
+import java.time.LocalDate
 import java.util.stream.IntStream
 import java.util.stream.Stream
 import kotlin.test.assertEquals
@@ -571,30 +572,6 @@ class WlkFieldsTranslatorTest {
     }
 
     @Nested
-    inner class RecordTime {
-
-        @Test
-        fun `getRecordTime should reject byte arrays of a size other than 2`() {
-            val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2), "01001011".toUByte(2), "01001011".toUByte(2))
-            assertThrows<Exception> { WlkFieldsTranslator.getRecordTime(wlkValue) }
-        }
-
-        @ParameterizedTest
-        @CsvSource(
-            "10100000, 00000101, 23, 59", // tot minutes: 1440
-            "00000001, 00000000, 00, 00", // tot minutes: 1
-            "11011001, 00000010, 12, 8" // tot minutes: 729
-        )
-        fun `getRecordTime should return a LocalTime object when in input is given a byte array containing the number of minutes past midnight plus 1`(byte1: String, byte2: String, expectedHour: Int, expectedMinute: Int) {
-            val wlkValue = ubyteArrayOf(byte1.toUByte(2), byte2.toUByte(2))
-            val result = WlkFieldsTranslator.getRecordTime(wlkValue)
-
-            assertEquals(expectedHour, result.hour)
-            assertEquals(expectedMinute, result.minute)
-        }
-    }
-
-    @Nested
     inner class ArchiveInterval {
 
         @Test
@@ -651,7 +628,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiOutTempTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiOutTempTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -662,21 +640,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 1st byte combined with the one in rightmost nibble of 3rd byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiOutTempTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiOutTempTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 23, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true",
+                "10011111, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 23, 59, false"
             )
-            fun `should use 1st byte and rightmost nibble of 3rd byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 1st byte and rightmost nibble of 3rd byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiOutTempTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiOutTempTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -686,7 +668,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowOutTempTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowOutTempTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -697,21 +680,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 2nd byte combined with the one in leftmost nibble of 3rd byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowOutTempTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowOutTempTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 1, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 1, 20, false",
+                "10100000, 10100000, 01010000, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true",
             )
-            fun `should use 2nd byte and leftmost nibble of 3rd byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 2nd byte and leftmost nibble of 3rd byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowOutTempTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowOutTempTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -721,7 +708,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiInTempTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiInTempTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -732,21 +720,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 4th byte combined with the one in rightmost nibble of 6th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiInTempTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiInTempTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 22, 39"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 22, 40, false",
+                "10100000, 01010000, 00000101, 10100000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 4th byte and rightmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 4th byte and rightmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiInTempTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiInTempTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -756,7 +748,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowInTempTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowInTempTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -767,21 +760,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 5th byte combined with the one in leftmost nibble of 6th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowInTempTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowInTempTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 11, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 12, 00, false",
+                "10100000, 01010000, 00000101, 01010000, 10100000, 01010101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 5th byte and leftmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 5th byte and leftmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowInTempTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowInTempTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -791,7 +788,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiChillTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiChillTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -802,21 +800,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 7th byte combined with the one in rightmost nibble of 9th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiChillTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiChillTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 21, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 21, 20, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 10100000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 7th byte and rightmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 7th byte and rightmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiChillTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiChillTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -826,7 +828,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowChillTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowChillTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -837,21 +840,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 8th byte combined with the one in leftmost nibble of 9th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowChillTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowChillTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 13, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 13, 20, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 10100000, 01010101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 8th byte and leftmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 8th byte and leftmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowChillTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowChillTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -861,7 +868,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiDewTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiDewTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -872,21 +880,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 10th byte combined with the one in rightmost nibble of 12th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiDewTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiDewTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 19, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 20, 0, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10100000, 01000000, 00010101, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 10th byte and rightmost nibble of 12th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 10th byte and rightmost nibble of 12th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiDewTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiDewTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -896,7 +908,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowDewTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowDewTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -907,21 +920,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 11th byte combined with the one in leftmost nibble of 12th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowDewTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowDewTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 5, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 5, 20, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 10100000, 01010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 11th byte and leftmost nibble of 12th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 11th byte and leftmost nibble of 12th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowDewTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowDewTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -931,7 +948,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiOutHumTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiOutHumTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -942,21 +960,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 13th byte combined with the one in rightmost nibble of 15th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiOutHumTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiOutHumTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 18, 39"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 18, 40, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 10100000, 10100000, 00000101, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 13th byte and rightmost nibble of 15th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 13th byte and rightmost nibble of 15th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiOutHumTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiOutHumTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -966,7 +988,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowOutHumTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowOutHumTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -977,21 +1000,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 14th byte combined with the one in leftmost nibble of 15th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowOutHumTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowOutHumTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 2, 39"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 2, 40, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 01010100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 14th byte and leftmost nibble of 15th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 14th byte and leftmost nibble of 15th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowOutHumTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowOutHumTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1001,7 +1028,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiInHumTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiInHumTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1012,21 +1040,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 16th byte combined with the one in rightmost nibble of 18th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiInHumTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiInHumTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 17, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 17, 20, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 10100000, 11000000, 00110101, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 16th byte and rightmost nibble of 18th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 16th byte and rightmost nibble of 18th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiInHumTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiInHumTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1036,7 +1068,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowInHumTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowInHumTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1047,21 +1080,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 17th byte combined with the one in leftmost nibble of 18th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowInHumTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowInHumTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 15, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 16, 0, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 10100000, 01010100, 10100000, 01010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 17th byte and leftmost nibble of 18th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 17th byte and leftmost nibble of 18th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowInHumTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowInHumTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1071,7 +1108,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiBarTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiBarTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1082,21 +1120,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 19th byte combined with the one in rightmost nibble of 21th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiBarTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiBarTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 3, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 4, 0, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 10100000, 10010000, 00010101, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 19th byte and rightmost nibble of 21th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 19th byte and rightmost nibble of 21th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiBarTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiBarTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1106,7 +1148,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowBarTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowBarTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1117,21 +1160,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 20th byte combined with the one in leftmost nibble of 21th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowBarTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowBarTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 6, 39"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 6, 40, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10100000, 01010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 20th byte and leftmost nibble of 21th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 20th byte and leftmost nibble of 21th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowBarTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowBarTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1141,7 +1188,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiSpeedTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiSpeedTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1152,21 +1200,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 22th byte combined with the one in rightmost nibble of 24th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiSpeedTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiSpeedTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 9, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 9, 20, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 10100000, 11100000, 00010101, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 22th byte and rightmost nibble of 24th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 22th byte and rightmost nibble of 24th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiSpeedTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiSpeedTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1176,7 +1228,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHi10MinSpeedTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHi10MinSpeedTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1187,21 +1240,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 23th byte combined with the one in leftmost nibble of 24th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHi10MinSpeedTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHi10MinSpeedTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 7, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 8, 0, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 10100000, 01010010, 01110000, 10000000, 00100011, 0, 0, true"
             )
-            fun `should use 23th byte and leftmost nibble of 24th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 23th byte and leftmost nibble of 24th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHi10MinSpeedTime(wlkValue)
+                val result = WlkFieldsTranslator.getHi10MinSpeedTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1211,7 +1268,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiRainRateTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiRainRateTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1222,21 +1280,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 25th byte combined with the one in rightmost nibble of 27th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiRainRateTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiRainRateTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 14, 39"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 14, 40, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 10100000, 10000000, 00100101, 0, 0, true"
             )
-            fun `should use 25th byte and rightmost nibble of 27th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 25th byte and rightmost nibble of 27th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiRainRateTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiRainRateTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1246,7 +1308,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 27`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiUVTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiUVTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1257,21 +1320,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 26th byte combined with the one in leftmost nibble of 27th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiUVTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiUVTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 10, 39"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10000000, 00100011, 10, 40, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 00010000, 11000000, 00110100, 11110000, 10010000, 00010000, 00110000, 11100000, 00010010, 01110000, 10100000, 01010011, 0, 0, true"
             )
-            fun `should use 26th byte and leftmost nibble of 27th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 26th byte and leftmost nibble of 27th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, b16: String, b17: String, b18: String, b19: String, b20: String, b21: String, b22: String, b23: String, b24: String, b25: String, b26: String, b27: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), b16.toUByte(2), b17.toUByte(2), b18.toUByte(2), b19.toUByte(2), b20.toUByte(2), b21.toUByte(2), b22.toUByte(2), b23.toUByte(2), b24.toUByte(2), b25.toUByte(2), b26.toUByte(2), b27.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiUVTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiUVTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1281,7 +1348,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 15`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiHeatTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiHeatTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1292,21 +1360,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 2nd byte combined with the one in leftmost nibble of 3rd byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiHeatTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiHeatTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 1, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 1, 20, false",
+                "10100000, 10100000, 01010101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 0, 0, true"
             )
-            fun `should use 2nd byte and leftmost nibble of 3rd byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 2nd byte and leftmost nibble of 3rd byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiHeatTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiHeatTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1316,7 +1388,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 15`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowHeatTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowHeatTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1327,21 +1400,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 4th byte combined with the one in rightmost nibble of 6th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowHeatTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowHeatTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 22, 39"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 22, 40, false",
+                "10100000, 01010000, 00000101, 10100000, 11010101, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 0, 0, true"
             )
-            fun `should use 4th byte and rightmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 4th byte and rightmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowHeatTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowHeatTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1351,7 +1428,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 15`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiTHSWTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiTHSWTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1362,21 +1440,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 5th byte combined with the one in leftmost nibble of 6th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiTHSWTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiTHSWTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 11, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 12, 0, false",
+                "10100000, 01010000, 00000101, 01010000, 10100000, 01010101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 0, 0, true"
             )
-            fun `should use 5th byte and leftmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 5th byte and leftmost nibble of 6th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiTHSWTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiTHSWTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1386,7 +1468,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 15`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowTHSWTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowTHSWTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1397,21 +1480,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 7th byte combined with the one in rightmost nibble of 9th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
-                assertNull(WlkFieldsTranslator.getLowTHSWTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowTHSWTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 21, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 21, 20, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 10100000, 00100101, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 0, 0, true"
             )
-            fun `should use 7th byte and rightmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 7th byte and rightmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowTHSWTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowTHSWTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1421,7 +1508,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 15`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getHiTHWTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getHiTHWTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1432,21 +1520,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 8th byte combined with the one in leftmost nibble of 9th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
-                assertNull(WlkFieldsTranslator.getHiTHWTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getHiTHWTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 13, 19"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 13, 20, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 10100000, 01010101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 0, 0, true"
             )
-            fun `should use 8th byte and leftmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 8th byte and leftmost nibble of 9th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getHiTHWTime(wlkValue)
+                val result = WlkFieldsTranslator.getHiTHWTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 
@@ -1456,7 +1548,8 @@ class WlkFieldsTranslatorTest {
             @Test
             fun `should reject byte arrays of a size other than 15`() {
                 val wlkValue = ubyteArrayOf("01001011".toUByte(2), "01001011".toUByte(2))
-                assertThrows<Exception> { WlkFieldsTranslator.getLowTHWTime(wlkValue) }
+                val date = LocalDate.of(2021, 10, 22)
+                assertThrows<Exception> { WlkFieldsTranslator.getLowTHWTime(date, wlkValue) }
             }
 
             @ParameterizedTest
@@ -1467,21 +1560,25 @@ class WlkFieldsTranslatorTest {
             )
             fun `should return null if value in 10th byte combined with the one in rightmost nibble of 12th byte is equal to 4095 or 2047 or 2048`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2), )
-                assertNull(WlkFieldsTranslator.getLowTHWTime(wlkValue))
+                val date = LocalDate.of(2021, 10, 22)
+                assertNull(WlkFieldsTranslator.getLowTHWTime(date, wlkValue))
             }
 
             @ParameterizedTest
             @CsvSource(
-                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 19, 59"
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10110000, 01000000, 00010100, 01100000, 10100000, 00000100, 20, 0, false",
+                "10100000, 01010000, 00000101, 01010000, 11010000, 00100101, 00000000, 00100000, 00110101, 10100000, 01000000, 00010101, 01100000, 10100000, 00000100, 0, 0, true"
             )
-            fun `should use 10th byte and rightmost nibble of 12th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int) {
+            fun `should use 10th byte and rightmost nibble of 12th byte of the array to get time value`(b1: String, b2: String, b3: String, b4: String, b5: String, b6: String, b7: String, b8: String, b9: String, b10: String, b11: String, b12: String, b13: String, b14: String, b15: String, expectedHour: Int, expectedMinute: Int, dateOverflows: Boolean) {
                 val wlkValue = ubyteArrayOf(b1.toUByte(2), b2.toUByte(2), b3.toUByte(2), b4.toUByte(2), b5.toUByte(2), b6.toUByte(2), b7.toUByte(2), b8.toUByte(2), b9.toUByte(2), b10.toUByte(2), b11.toUByte(2), b12.toUByte(2), b13.toUByte(2), b14.toUByte(2), b15.toUByte(2))
+                val date = LocalDate.of(2021, 10, 22)
 
-                val result = WlkFieldsTranslator.getLowTHWTime(wlkValue)
+                val result = WlkFieldsTranslator.getLowTHWTime(date, wlkValue)
 
                 assertNotNull(result)
                 assertEquals(expectedHour, result.hour)
                 assertEquals(expectedMinute, result.minute)
+                assertEquals(date.plusDays(if (dateOverflows) 1 else 0), result.toLocalDate())
             }
         }
 

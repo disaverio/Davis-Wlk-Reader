@@ -8,6 +8,7 @@ import dev.disaverio.wlkreader.models.wlk.structs.DailySummary1
 import dev.disaverio.wlkreader.models.wlk.structs.DailySummary2
 import dev.disaverio.wlkreader.types.WindDirection
 import java.time.LocalDate
+import java.time.LocalDateTime
 import dev.disaverio.wlkreader.models.wlk.DayData as WlkDayData
 import dev.disaverio.wlkreader.models.wlk.MonthData as WlkMonthData
 import dev.disaverio.wlkreader.models.wlk.structs.WeatherDataRecord as WlkWeatherDataRecord
@@ -25,13 +26,13 @@ class WlkTransformer private constructor() {
             DayData(
                 date = dayData.date,
                 summary = fromWlk(dayData.date, dayData.dailySummary1, dayData.dailySummary2),
-                records = (dayData.weatherRecords.map { fromWlk(dayData.date, it) }).sortedBy { it.time }
+                records = (dayData.weatherRecords.map { fromWlk(dayData.date, it) }).sortedBy { LocalDateTime.of(it.date, it.time) }
             )
 
         fun fromWlk(date: LocalDate, record: WlkWeatherDataRecord) =
             WeatherDataRecord(
-                date = date,
-                time = WlkFieldsTranslator.getRecordTime(record.packedTime),
+                date = WlkFieldsTranslator.getDateTime(date, record.packedTime).toLocalDate(),
+                time = WlkFieldsTranslator.getDateTime(date, record.packedTime).toLocalTime(),
                 archiveInterval = WlkFieldsTranslator.getArchiveInterval(record.archiveInterval),
                 packedTime = WlkFieldsTranslator.getDimensionlessValue(record.packedTime),
                 outsideTemp = WlkFieldsTranslator.getTemperature(record.outsideTemp),
@@ -90,24 +91,24 @@ class WlkTransformer private constructor() {
                 hiRainRate = WlkFieldsTranslator.getRainRate(ds1.hiRainRate),
                 dailyUVDose = WlkFieldsTranslator.getUvMedIndex(ds1.dailyUVDose),
                 hiUV = WlkFieldsTranslator.getUvIndex(ds1.hiUV),
-                hiOutTempTime = WlkFieldsTranslator.getHiOutTempTime(ds1.timeValues),
-                lowOutTempTime = WlkFieldsTranslator.getLowOutTempTime(ds1.timeValues),
-                hiInTempTime = WlkFieldsTranslator.getHiInTempTime(ds1.timeValues),
-                lowInTempTime = WlkFieldsTranslator.getLowInTempTime(ds1.timeValues),
-                hiChillTime = WlkFieldsTranslator.getHiChillTime(ds1.timeValues),
-                lowChillTime = WlkFieldsTranslator.getLowChillTime(ds1.timeValues),
-                hiDewTime = WlkFieldsTranslator.getHiDewTime(ds1.timeValues),
-                lowDewTime = WlkFieldsTranslator.getLowDewTime(ds1.timeValues),
-                hiOutHumTime = WlkFieldsTranslator.getHiOutHumTime(ds1.timeValues),
-                lowOutHumTime = WlkFieldsTranslator.getLowOutHumTime(ds1.timeValues),
-                hiInHumTime = WlkFieldsTranslator.getHiInHumTime(ds1.timeValues),
-                lowInHumTime = WlkFieldsTranslator.getLowInHumTime(ds1.timeValues),
-                hiBarTime = WlkFieldsTranslator.getHiBarTime(ds1.timeValues),
-                lowBarTime = WlkFieldsTranslator.getLowBarTime(ds1.timeValues),
-                hiSpeedTime = WlkFieldsTranslator.getHiSpeedTime(ds1.timeValues),
-                hi10MinSpeedTime = WlkFieldsTranslator.getHi10MinSpeedTime(ds1.timeValues),
-                hiRainRateTime = WlkFieldsTranslator.getHiRainRateTime(ds1.timeValues),
-                hiUVTime = WlkFieldsTranslator.getHiUVTime(ds1.timeValues),
+                hiOutTempTime = WlkFieldsTranslator.getHiOutTempTime(date, ds1.timeValues),
+                lowOutTempTime = WlkFieldsTranslator.getLowOutTempTime(date, ds1.timeValues),
+                hiInTempTime = WlkFieldsTranslator.getHiInTempTime(date, ds1.timeValues),
+                lowInTempTime = WlkFieldsTranslator.getLowInTempTime(date, ds1.timeValues),
+                hiChillTime = WlkFieldsTranslator.getHiChillTime(date, ds1.timeValues),
+                lowChillTime = WlkFieldsTranslator.getLowChillTime(date, ds1.timeValues),
+                hiDewTime = WlkFieldsTranslator.getHiDewTime(date, ds1.timeValues),
+                lowDewTime = WlkFieldsTranslator.getLowDewTime(date, ds1.timeValues),
+                hiOutHumTime = WlkFieldsTranslator.getHiOutHumTime(date, ds1.timeValues),
+                lowOutHumTime = WlkFieldsTranslator.getLowOutHumTime(date, ds1.timeValues),
+                hiInHumTime = WlkFieldsTranslator.getHiInHumTime(date, ds1.timeValues),
+                lowInHumTime = WlkFieldsTranslator.getLowInHumTime(date, ds1.timeValues),
+                hiBarTime = WlkFieldsTranslator.getHiBarTime(date, ds1.timeValues),
+                lowBarTime = WlkFieldsTranslator.getLowBarTime(date, ds1.timeValues),
+                hiSpeedTime = WlkFieldsTranslator.getHiSpeedTime(date, ds1.timeValues),
+                hi10MinSpeedTime = WlkFieldsTranslator.getHi10MinSpeedTime(date, ds1.timeValues),
+                hiRainRateTime = WlkFieldsTranslator.getHiRainRateTime(date, ds1.timeValues),
+                hiUVTime = WlkFieldsTranslator.getHiUVTime(date, ds1.timeValues),
                 integratedHeatDD65 = WlkFieldsTranslator.getDeltaTemperature(ds2.integratedHeatDD65),
                 integratedCoolDD65 = WlkFieldsTranslator.getDeltaTemperature(ds2.integratedCoolDD65),
                 hiHeat = WlkFieldsTranslator.getTemperature(ds2.hiHeat),
@@ -117,12 +118,12 @@ class WlkTransformer private constructor() {
                 lowTHSW = WlkFieldsTranslator.getTemperature(ds2.lowTHSW),
                 hiTHW = WlkFieldsTranslator.getTemperature(ds2.hiTHW),
                 lowTHW = WlkFieldsTranslator.getTemperature(ds2.lowTHW),
-                hiHeatTime = WlkFieldsTranslator.getHiHeatTime(ds2.timeValues),
-                lowHeatTime = WlkFieldsTranslator.getLowHeatTime(ds2.timeValues),
-                hiTHSWTime = WlkFieldsTranslator.getHiTHSWTime(ds2.timeValues),
-                lowTHSWTime = WlkFieldsTranslator.getLowTHSWTime(ds2.timeValues),
-                hiTHWTime = WlkFieldsTranslator.getHiTHWTime(ds2.timeValues),
-                lowTHWTime = WlkFieldsTranslator.getLowTHWTime(ds2.timeValues),
+                hiHeatTime = WlkFieldsTranslator.getHiHeatTime(date, ds2.timeValues),
+                lowHeatTime = WlkFieldsTranslator.getLowHeatTime(date, ds2.timeValues),
+                hiTHSWTime = WlkFieldsTranslator.getHiTHSWTime(date, ds2.timeValues),
+                lowTHSWTime = WlkFieldsTranslator.getLowTHSWTime(date, ds2.timeValues),
+                hiTHWTime = WlkFieldsTranslator.getHiTHWTime(date, ds2.timeValues),
+                lowTHWTime = WlkFieldsTranslator.getLowTHWTime(date, ds2.timeValues),
                 minutesAsDominantDirection = WindDirection.values().associateWith { WlkFieldsTranslator.getMinutesAsDominantDirection(it, ds2.dirBins) },
                 hiWetBulb = WlkFieldsTranslator.getTemperature(ds2.hiWetBulb),
                 lowWetBulb = WlkFieldsTranslator.getTemperature(ds2.lowWetBulb),

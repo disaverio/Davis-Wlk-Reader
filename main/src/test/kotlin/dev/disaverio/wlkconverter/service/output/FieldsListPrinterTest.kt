@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.stream.Stream
 import kotlin.reflect.full.declaredMemberProperties
@@ -31,46 +32,46 @@ class FieldsListPrinterTest {
         date = LocalDate.of(1, 1, 1),
         dataSpan = 0,
         hiInTemp = Temperature.fromFahrenheit(0.0),
-        hiInTempTime = LocalTime.of(0, 0),
+        hiInTempTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         avgInTemp = Temperature.fromFahrenheit(0.0),
         lowInTemp = Temperature.fromFahrenheit(0.0),
-        lowInTempTime = LocalTime.of(0, 0),
+        lowInTempTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         hiInHum = 0.0,
-        hiInHumTime = LocalTime.of(0, 0),
+        hiInHumTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         lowInHum = 0.0,
-        lowInHumTime = LocalTime.of(0, 0),
+        lowInHumTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         hiOutTemp = Temperature.fromFahrenheit(0.0),
-        hiOutTempTime = LocalTime.of(0, 0),
+        hiOutTempTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         avgOutTemp = Temperature.fromFahrenheit(56.3),
         lowOutTemp = Temperature.fromFahrenheit(0.0),
-        lowOutTempTime = LocalTime.of(0, 0),
+        lowOutTempTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         hiChill = Temperature.fromFahrenheit(0.0),
-        hiChillTime = LocalTime.of(0, 0),
+        hiChillTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         avgChill = Temperature.fromFahrenheit(88.7),
         lowChill = Temperature.fromFahrenheit(0.0),
-        lowChillTime = LocalTime.of(0, 0),
+        lowChillTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         hiDew = Temperature.fromFahrenheit(0.0),
-        hiDewTime = LocalTime.of(0, 0),
+        hiDewTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         avgDew = Temperature.fromFahrenheit(0.0),
         lowDew = Temperature.fromFahrenheit(0.0),
-        lowDewTime = LocalTime.of(0, 0),
+        lowDewTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         hiOutHum = 0.0,
-        hiOutHumTime = LocalTime.of(0, 0),
+        hiOutHumTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         avgOutHum = 0.0,
         lowOutHum = 0.0,
-        lowOutHumTime = LocalTime.of(0, 0),
+        lowOutHumTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         hiBar = Pressure.fromInchesOfMercury(0.0),
-        hiBarTime = LocalTime.of(0, 0),
+        hiBarTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         avgBar = Pressure.fromInchesOfMercury(0.0),
         lowBar = Pressure.fromInchesOfMercury(0.0),
-        lowBarTime = LocalTime.of(13, 47),
+        lowBarTime = LocalDateTime.of(2021, 10, 22, 13, 47),
         hiSpeed = Speed.fromMilePerHour(10.0),
         dirHiSpeed = WindDirection[0.0],
-        hiSpeedTime = LocalTime.of(0, 0),
+        hiSpeedTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         avgSpeed = Speed.fromMilePerHour(0.0),
         dailyWindRunTotal = Length.fromMile(0.0),
         hi10MinSpeed = Speed.fromMilePerHour(0.0),
-        hi10MinSpeedTime = LocalTime.of(0, 0),
+        hi10MinSpeedTime = LocalDateTime.of(2021, 10, 22, 0, 0),
         hi10MinDir = WindDirection[0.0],
         minutesAsDominantDirection = mapOf(
             WindDirection.N to 0,
@@ -78,25 +79,25 @@ class FieldsListPrinterTest {
         ),
         dailyRainTotal = Precipitation.fromInch(0.0),
         hiRainRate = RainRate.fromInchPerHour(0.0),
-        hiRainRateTime = LocalTime.of(0, 0),
+        hiRainRateTime = LocalDateTime.of(2021, 10, 22,0, 0),
         dailyUVDose = 0.0,
         hiUV = 0.0,
-        hiUVTime = LocalTime.of(0, 0),
+        hiUVTime = LocalDateTime.of(2021, 10, 22,0, 0),
         integratedHeatDD65 = DeltaTemperature.fromFahrenheit(0.0),
         integratedCoolDD65 = DeltaTemperature.fromFahrenheit(0.0),
         hiHeat = Temperature.fromFahrenheit(0.0),
-        hiHeatTime = LocalTime.of(18, 21),
+        hiHeatTime = LocalDateTime.of(2021, 10, 22,18, 21),
         avgHeat = Temperature.fromFahrenheit(0.0),
         lowHeat = Temperature.fromFahrenheit(0.0),
-        lowHeatTime = LocalTime.of(0, 0),
+        lowHeatTime = LocalDateTime.of(2021, 10, 22,0, 0),
         hiTHSW = Temperature.fromFahrenheit(0.0),
-        hiTHSWTime = LocalTime.of(0, 0),
+        hiTHSWTime = LocalDateTime.of(2021, 10, 22,0, 0),
         lowTHSW = Temperature.fromFahrenheit(0.0),
-        lowTHSWTime = LocalTime.of(0, 0),
+        lowTHSWTime = LocalDateTime.of(2021, 10, 22,0, 0),
         hiTHW = Temperature.fromFahrenheit(0.0),
-        hiTHWTime = LocalTime.of(0, 0),
+        hiTHWTime = LocalDateTime.of(2021, 10, 22,0, 0),
         lowTHW = Temperature.fromFahrenheit(0.0),
-        lowTHWTime = LocalTime.of(0, 0),
+        lowTHWTime = LocalDateTime.of(2021, 10, 22,0, 0),
         numWindPackets = 0,
         hiSolar = 0,
         dailySolarEnergy = 0.0,
@@ -238,7 +239,7 @@ class FieldsListPrinterTest {
             every { readFileLines(filePath) } throws Exception("whatever")
             val p = FieldsListPrinterExtension(filePath = filePath)
 
-            assertEquals(listOf(listOf("0.00", "31.50", "-17.78", "-17.78", "-17.78", "0.0", "13.50", "0.00", "-17.78", "0.0", "0.00", "0.0", "0.0", "0.00", "0", "0001-01-01", "N", "N", "0.00", "00:00", "0.00", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "18:21", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.00", "00:00", "0", "16.09", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "0.00", "0.00", "0.00", "13:47", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "0", "{N=0, S=1}", "0")), p.getRequestedFields(listOf(dailySummary)))
+            assertEquals(listOf(listOf("0.00", "31.50", "-17.78", "-17.78", "-17.78", "0.0", "13.50", "0.00", "-17.78", "0.0", "0.00", "0.0", "0.0", "0.00", "0", "0001-01-01", "N", "N", "0.00", "2021-10-22T00:00", "0.00", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T18:21", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.00", "2021-10-22T00:00", "0", "16.09", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "0.00", "0.00", "0.00", "2021-10-22T13:47", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "0", "{N=0, S=1}", "0")), p.getRequestedFields(listOf(dailySummary)))
             assertEquals(listOf(listOf("0.0", "0.0", "0", "0.00", "0001-01-01", "0", "-17.78", "127.00", "0.0", "N", "0.00", "0", "0.0", "10.00", "32.50", "0", "0.0", "38.00", "0", "0.00", "0", "00:00", "N", "16.09")), p.getRequestedFields(listOf(weatherDataRecord)))
         }
 
@@ -246,7 +247,7 @@ class FieldsListPrinterTest {
         fun `should provide full list of values, when null is passed as fields list file path`() {
             val p = FieldsListPrinterExtension(filePath = null)
 
-            assertEquals(listOf(listOf("0.00", "31.50", "-17.78", "-17.78", "-17.78", "0.0", "13.50", "0.00", "-17.78", "0.0", "0.00", "0.0", "0.0", "0.00", "0", "0001-01-01", "N", "N", "0.00", "00:00", "0.00", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "18:21", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.00", "00:00", "0", "16.09", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "0.00", "0.00", "0.00", "13:47", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "0.0", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "00:00", "-17.78", "0", "{N=0, S=1}", "0")), p.getRequestedFields(listOf(dailySummary)))
+            assertEquals(listOf(listOf("0.00", "31.50", "-17.78", "-17.78", "-17.78", "0.0", "13.50", "0.00", "-17.78", "0.0", "0.00", "0.0", "0.0", "0.00", "0", "0001-01-01", "N", "N", "0.00", "2021-10-22T00:00", "0.00", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T18:21", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.00", "2021-10-22T00:00", "0", "16.09", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "0.00", "0.00", "0.00", "2021-10-22T13:47", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "0.0", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "2021-10-22T00:00", "-17.78", "0", "{N=0, S=1}", "0")), p.getRequestedFields(listOf(dailySummary)))
             assertEquals(listOf(listOf("0.0", "0.0", "0", "0.00", "0001-01-01", "0", "-17.78", "127.00", "0.0", "N", "0.00", "0", "0.0", "10.00", "32.50", "0", "0.0", "38.00", "0", "0.00", "0", "00:00", "N", "16.09")), p.getRequestedFields(listOf(weatherDataRecord)))
         }
 
@@ -260,9 +261,9 @@ class FieldsListPrinterTest {
 
         private fun getGetRequestedDailySummaryFieldsTestArguments(): Stream<Arguments> =
             Stream.of(
-                Arguments.of(null, "13:47,16.09,13.50,31.50,18:21"),
-                Arguments.of(UnitSystem.SI, "13:47,4.47,13.50,31.50,18:21"),
-                Arguments.of(UnitSystem.IMPERIAL, "13:47,10.00,56.30,88.70,18:21")
+                Arguments.of(null, "2021-10-22T13:47,16.09,13.50,31.50,2021-10-22T18:21"),
+                Arguments.of(UnitSystem.SI, "2021-10-22T13:47,4.47,13.50,31.50,2021-10-22T18:21"),
+                Arguments.of(UnitSystem.IMPERIAL, "2021-10-22T13:47,10.00,56.30,88.70,2021-10-22T18:21")
             )
 
         private fun getGetRequestedWeatherDataRecordFieldsTestArguments(): Stream<Arguments> =

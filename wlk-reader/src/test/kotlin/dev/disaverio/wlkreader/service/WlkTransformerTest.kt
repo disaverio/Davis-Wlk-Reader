@@ -10,6 +10,7 @@ import dev.disaverio.wlkreader.models.wlk.structs.HeaderBlock
 import dev.disaverio.wlkreader.types.WindDirection
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 import kotlin.test.assertEquals
 import dev.disaverio.wlkreader.models.wlk.DayData as WlkDayData
@@ -44,7 +45,7 @@ class WlkTransformerTest {
         val date = LocalDate.of(2021, 10, 22)
         val result = WlkTransformer.fromWlk(date, record)
 
-        assertEquals(date, result.date)
+        assertEquals(WlkFieldsTranslator.getDateTime(date, record.packedTime), LocalDateTime.of(result.date, result.time))
         assertWeatherDataRecordAreEqual(record, result)
     }
 
@@ -73,13 +74,12 @@ class WlkTransformerTest {
         assertDailySummaryAreEqual(wlkDayData.dailySummary1, wlkDayData.dailySummary2, dayData.summary)
 
         wlkDayData.weatherRecords.forEach { wlkWeatherRecord ->
-            val weatherRecord = dayData.records.single { WlkFieldsTranslator.getRecordTime(wlkWeatherRecord.packedTime) == it.time }
+            val weatherRecord = dayData.records.single { WlkFieldsTranslator.getDateTime(wlkDayData.date, wlkWeatherRecord.packedTime) == LocalDateTime.of(it.date, it.time) }
             assertWeatherDataRecordAreEqual(wlkWeatherRecord, weatherRecord)
         }
     }
 
     private fun assertWeatherDataRecordAreEqual(wlkDataRecord: WlkWeatherDataRecord, dataRecord: WeatherDataRecord) {
-        assertEquals(WlkFieldsTranslator.getRecordTime(wlkDataRecord.packedTime), dataRecord.time)
         assertEquals(WlkFieldsTranslator.getArchiveInterval(wlkDataRecord.archiveInterval), dataRecord.archiveInterval)
         assertEquals(WlkFieldsTranslator.getDimensionlessValue(wlkDataRecord.packedTime), dataRecord.packedTime)
         assertEquals(WlkFieldsTranslator.getTemperature(wlkDataRecord.outsideTemp)?.fahrenheit, dataRecord.outsideTemp?.fahrenheit)
@@ -136,24 +136,24 @@ class WlkTransformerTest {
         assertEquals(WlkFieldsTranslator.getRainRate(ds1.hiRainRate).inchperhour, ds.hiRainRate.inchperhour)
         assertEquals(WlkFieldsTranslator.getUvMedIndex(ds1.dailyUVDose), ds.dailyUVDose)
         assertEquals(WlkFieldsTranslator.getUvIndex(ds1.hiUV), ds.hiUV)
-        assertEquals(WlkFieldsTranslator.getHiOutTempTime(ds1.timeValues), ds.hiOutTempTime)
-        assertEquals(WlkFieldsTranslator.getLowOutTempTime(ds1.timeValues), ds.lowOutTempTime)
-        assertEquals(WlkFieldsTranslator.getHiInTempTime(ds1.timeValues), ds.hiInTempTime)
-        assertEquals(WlkFieldsTranslator.getLowInTempTime(ds1.timeValues), ds.lowInTempTime)
-        assertEquals(WlkFieldsTranslator.getHiChillTime(ds1.timeValues), ds.hiChillTime)
-        assertEquals(WlkFieldsTranslator.getLowChillTime(ds1.timeValues), ds.lowChillTime)
-        assertEquals(WlkFieldsTranslator.getHiDewTime(ds1.timeValues), ds.hiDewTime)
-        assertEquals(WlkFieldsTranslator.getLowDewTime(ds1.timeValues), ds.lowDewTime)
-        assertEquals(WlkFieldsTranslator.getHiOutHumTime(ds1.timeValues), ds.hiOutHumTime)
-        assertEquals(WlkFieldsTranslator.getLowOutHumTime(ds1.timeValues), ds.lowOutHumTime)
-        assertEquals(WlkFieldsTranslator.getHiInHumTime(ds1.timeValues), ds.hiInHumTime)
-        assertEquals(WlkFieldsTranslator.getLowInHumTime(ds1.timeValues), ds.lowInHumTime)
-        assertEquals(WlkFieldsTranslator.getHiBarTime(ds1.timeValues), ds.hiBarTime)
-        assertEquals(WlkFieldsTranslator.getLowBarTime(ds1.timeValues), ds.lowBarTime)
-        assertEquals(WlkFieldsTranslator.getHiSpeedTime(ds1.timeValues), ds.hiSpeedTime)
-        assertEquals(WlkFieldsTranslator.getHi10MinSpeedTime(ds1.timeValues), ds.hi10MinSpeedTime)
-        assertEquals(WlkFieldsTranslator.getHiRainRateTime(ds1.timeValues), ds.hiRainRateTime)
-        assertEquals(WlkFieldsTranslator.getHiUVTime(ds1.timeValues), ds.hiUVTime)
+        assertEquals(WlkFieldsTranslator.getHiOutTempTime(ds.date, ds1.timeValues), ds.hiOutTempTime)
+        assertEquals(WlkFieldsTranslator.getLowOutTempTime(ds.date, ds1.timeValues), ds.lowOutTempTime)
+        assertEquals(WlkFieldsTranslator.getHiInTempTime(ds.date, ds1.timeValues), ds.hiInTempTime)
+        assertEquals(WlkFieldsTranslator.getLowInTempTime(ds.date, ds1.timeValues), ds.lowInTempTime)
+        assertEquals(WlkFieldsTranslator.getHiChillTime(ds.date, ds1.timeValues), ds.hiChillTime)
+        assertEquals(WlkFieldsTranslator.getLowChillTime(ds.date, ds1.timeValues), ds.lowChillTime)
+        assertEquals(WlkFieldsTranslator.getHiDewTime(ds.date, ds1.timeValues), ds.hiDewTime)
+        assertEquals(WlkFieldsTranslator.getLowDewTime(ds.date, ds1.timeValues), ds.lowDewTime)
+        assertEquals(WlkFieldsTranslator.getHiOutHumTime(ds.date, ds1.timeValues), ds.hiOutHumTime)
+        assertEquals(WlkFieldsTranslator.getLowOutHumTime(ds.date, ds1.timeValues), ds.lowOutHumTime)
+        assertEquals(WlkFieldsTranslator.getHiInHumTime(ds.date, ds1.timeValues), ds.hiInHumTime)
+        assertEquals(WlkFieldsTranslator.getLowInHumTime(ds.date, ds1.timeValues), ds.lowInHumTime)
+        assertEquals(WlkFieldsTranslator.getHiBarTime(ds.date, ds1.timeValues), ds.hiBarTime)
+        assertEquals(WlkFieldsTranslator.getLowBarTime(ds.date, ds1.timeValues), ds.lowBarTime)
+        assertEquals(WlkFieldsTranslator.getHiSpeedTime(ds.date, ds1.timeValues), ds.hiSpeedTime)
+        assertEquals(WlkFieldsTranslator.getHi10MinSpeedTime(ds.date, ds1.timeValues), ds.hi10MinSpeedTime)
+        assertEquals(WlkFieldsTranslator.getHiRainRateTime(ds.date, ds1.timeValues), ds.hiRainRateTime)
+        assertEquals(WlkFieldsTranslator.getHiUVTime(ds.date, ds1.timeValues), ds.hiUVTime)
         assertEquals(WlkFieldsTranslator.getDeltaTemperature(ds2.integratedHeatDD65)?.fahrenheit, ds.integratedHeatDD65?.fahrenheit)
         assertEquals(WlkFieldsTranslator.getDeltaTemperature(ds2.integratedCoolDD65)?.fahrenheit, ds.integratedCoolDD65?.fahrenheit)
         assertEquals(WlkFieldsTranslator.getTemperature(ds2.hiHeat)?.fahrenheit, ds.hiHeat?.fahrenheit)
@@ -163,12 +163,12 @@ class WlkTransformerTest {
         assertEquals(WlkFieldsTranslator.getTemperature(ds2.lowTHSW)?.fahrenheit, ds.lowTHSW?.fahrenheit)
         assertEquals(WlkFieldsTranslator.getTemperature(ds2.hiTHW)?.fahrenheit, ds.hiTHW?.fahrenheit)
         assertEquals(WlkFieldsTranslator.getTemperature(ds2.lowTHW)?.fahrenheit, ds.lowTHW?.fahrenheit)
-        assertEquals(WlkFieldsTranslator.getHiHeatTime(ds2.timeValues), ds.hiHeatTime)
-        assertEquals(WlkFieldsTranslator.getLowHeatTime(ds2.timeValues), ds.lowHeatTime)
-        assertEquals(WlkFieldsTranslator.getHiTHSWTime(ds2.timeValues), ds.hiTHSWTime)
-        assertEquals(WlkFieldsTranslator.getLowTHSWTime(ds2.timeValues), ds.lowTHSWTime)
-        assertEquals(WlkFieldsTranslator.getHiTHWTime(ds2.timeValues), ds.hiTHWTime)
-        assertEquals(WlkFieldsTranslator.getLowTHWTime(ds2.timeValues), ds.lowTHWTime)
+        assertEquals(WlkFieldsTranslator.getHiHeatTime(ds.date, ds2.timeValues), ds.hiHeatTime)
+        assertEquals(WlkFieldsTranslator.getLowHeatTime(ds.date, ds2.timeValues), ds.lowHeatTime)
+        assertEquals(WlkFieldsTranslator.getHiTHSWTime(ds.date, ds2.timeValues), ds.hiTHSWTime)
+        assertEquals(WlkFieldsTranslator.getLowTHSWTime(ds.date, ds2.timeValues), ds.lowTHSWTime)
+        assertEquals(WlkFieldsTranslator.getHiTHWTime(ds.date, ds2.timeValues), ds.hiTHWTime)
+        assertEquals(WlkFieldsTranslator.getLowTHWTime(ds.date, ds2.timeValues), ds.lowTHWTime)
         assertEquals(WindDirection.values().associateWith { WlkFieldsTranslator.getMinutesAsDominantDirection(it, ds2.dirBins) }, ds.minutesAsDominantDirection)
         assertEquals(WlkFieldsTranslator.getTemperature(ds2.hiWetBulb)?.fahrenheit, ds.hiWetBulb?.fahrenheit)
         assertEquals(WlkFieldsTranslator.getTemperature(ds2.lowWetBulb)?.fahrenheit, ds.lowWetBulb?.fahrenheit)

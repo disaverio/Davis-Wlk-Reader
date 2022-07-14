@@ -3,7 +3,6 @@ package dev.disaverio.wlkconverter.service.output
 import dev.disaverio.wlkconverter.utils.readFileLines
 import dev.disaverio.wlkreader.models.data.DailySummary
 import dev.disaverio.wlkreader.models.data.WeatherDataRecord
-import dev.disaverio.wlkreader.types.Temperature
 import dev.disaverio.wlkreader.types.TypeWithUnitSystem
 import dev.disaverio.wlkreader.types.units.UnitSystem
 import kotlin.reflect.KProperty1
