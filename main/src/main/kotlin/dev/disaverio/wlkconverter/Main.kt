@@ -11,10 +11,10 @@ import kotlin.io.path.isDirectory
 fun main(args: Array<String>) {
     val parser = ArgParser("WlkConverter")
     val inputFilePathList by parser.option(ArgType.String, "input", "i", "Input file path").required().multiple()
-    var outputFilePath by parser.option(ArgType.String, "output", "o", "Output file path")
+    val outputFilePath by parser.option(ArgType.String, "output", "o", "Output file path")
     val unitSystem by parser.option(ArgType.Choice<UnitSystem>(), "unit", "u", "Unit system used for values in the printed output")
     val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), "outputFormat", "f", "Format for output file").default(OutputFormat.CSV) //.multiple()
-    val outputFieldsListFilePath by parser.option(ArgType.String, "fieldsListFile", "p", "File containing list of fields printed in output")
+    val outputFieldsListFilePath by parser.option(ArgType.String, "fieldsListFile", "p", "Path to file containing list of fields printed in output")
 
     parser.parse(args)
 

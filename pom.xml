@@ -61,7 +61,7 @@
                 </executions>
                 <configuration>
                     <args>
-                        <arg>-Xopt-in=kotlin.ExperimentalUnsignedTypes</arg>
+                        <arg>-opt-in=kotlin.ExperimentalUnsignedTypes</arg>
                     </args>
                 </configuration>
             </plugin>
