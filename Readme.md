@@ -19,29 +19,42 @@ Options:
     - `-i /path/to/my/wlk/folder -i /path/to/another/wlk/folder`
     - `-i /path/to/my/wlk/folder -i /path/to/my/2021-01.wlk -i /path/to/my/2021-02.wlk -i /path/to/another/wlk/folder`
 3. `-o` is optional: if no path is provided the output will be printed in two files named `DailySummary_${yyyy}-${mm}.${ext}` and `DailyData_${yyyy}-${mm}.${ext}`. Note: prefixes `DailySummary_${yyyy}-${mm}` and `DailyData_${yyyy}-${mm}` are always prepended to provided filenames.
-5. `-f`: at the moment is **not used**, since only `csv` is supported as output format
-6. `-p` is optional: path to text files with two lines containing comma separated fields to be printed in output. **First line** contains fields for Daily Summary output, **second line** contains fields for Daily Data output. **If no path is provided** all the fields will be printed. If first line is empty, then only Daily Data is printed. If second line is empty then only Daily Summaries are printed.
+4. `-f`: at the moment is **not used**, since only `csv` is supported as output format
+5. `-p` is optional: path to text files with list of fields to be printed in output.
+
+   To define daily data fields to be printed, begin the line with `DAILY_DATA_FIELDS:` header, and then specify a comma separated values list of fields.
+   
+   To define daily summary fields to be printed, begin the line with `DAILY_SUMMARY_FIELDS:` header, and then specify a comma separated values list of fields.
+   
+   Example:
+    ```
+    DAILY_DATA_FIELDS:date,time,outsideTemp,outsideHum,windSpeed,windDirection
+    DAILY_SUMMARY_FIELDS:hiOutTemp,hiOutTempTime,hiBar,hiBarTime
+    ```
+   Fields will be printed in the same order as defined in the file.
+   **If no path is provided** or **if the corresponding line is missing** all the fields will be printed. **If no fields follow the line header**, then the related output file will not be printed.
 
    Available fields (here grouped by affinity for reading convenience):
    - **Daily Summary** fields:
-      - Inside
-        - Temperature: `hiInTemp`, `hiInTempTime`, `avgInTemp`, `lowInTemp`, `lowInTempTime`
-        - Humidity: `hiInHum`, `hiInHumTime`, `lowInHum`, `lowInHumTime`
-      - Outside
-         - Temperature: `hiOutTemp`, `hiOutTempTime`, `avgOutTemp`, `lowOutTemp`, `lowOutTempTime`, `hiChill`, `hiChillTime`, `avgChill`, `lowChill`, `lowChillTime`, `hiDew`, `hiDewTime`, `avgDew`, `lowDew`, `lowDewTime`, `hiWetBulb`, `avgWetBulb`, `lowWetBulb`
-         - Humidity: `hiOutHum`, `hiOutHumTime`, `avgOutHum`, `lowOutHum`, `lowOutHumTime`
-         - Pressure: `hiBar`, `hiBarTime`, `avgBar`, `lowBar`, `lowBarTime`
-         - Wind: `hiSpeed`, `dirHiSpeed`, `hiSpeedTime`, `avgSpeed`, `dailyWindRunTotal`, `hi10MinSpeed`, `hi10MinSpeedTime`, `hi10MinDir`, `minutesAsDominantDirection`
-         - Rain: `dailyRainTotal`, `hiRainRate`, `hiRainRateTime`
-         - Other: `dailyUVDose`, `hiUV`, `hiUVTime`, `hiHeat`, `hiHeatTime`, `avgHeat`, `lowHeat`, `lowHeatTime`, `hiTHSW`, `hiTHSWTime`, `lowTHSW`, `lowTHSWTime`, `hiTHW`, `hiTHWTime`, `lowTHW`, `lowTHWTime`
-      - Other: `date`, `integratedHeatDD65`, `integratedCoolDD65`, `dataSpan`, `numWindPackets`, `hiSolar`, `dailySolarEnergy`, `minSunlight`, `dailyETTotal`
+     - Inside
+       - Temperature: `hiInTemp`, `hiInTempTime`, `avgInTemp`, `lowInTemp`, `lowInTempTime`
+       - Humidity: `hiInHum`, `hiInHumTime`, `lowInHum`, `lowInHumTime`
+     - Outside
+       - Temperature: `hiOutTemp`, `hiOutTempTime`, `avgOutTemp`, `lowOutTemp`, `lowOutTempTime`, `hiChill`, `hiChillTime`, `avgChill`, `lowChill`, `lowChillTime`, `hiDew`, `hiDewTime`, `avgDew`, `lowDew`, `lowDewTime`, `hiWetBulb`, `avgWetBulb`, `lowWetBulb`
+       - Humidity: `hiOutHum`, `hiOutHumTime`, `avgOutHum`, `lowOutHum`, `lowOutHumTime`
+       - Pressure: `hiBar`, `hiBarTime`, `avgBar`, `lowBar`, `lowBarTime`
+       - Wind: `hiSpeed`, `dirHiSpeed`, `hiSpeedTime`, `avgSpeed`, `dailyWindRunTotal`, `hi10MinSpeed`, `hi10MinSpeedTime`, `hi10MinDir`, `minutesAsDominantDirection`
+       - Rain: `dailyRainTotal`, `hiRainRate`, `hiRainRateTime`
+       - Other: `dailyUVDose`, `hiUV`, `hiUVTime`, `hiHeat`, `hiHeatTime`, `avgHeat`, `lowHeat`, `lowHeatTime`, `hiTHSW`, `hiTHSWTime`, `lowTHSW`, `lowTHSWTime`, `hiTHW`, `hiTHWTime`, `lowTHW`, `lowTHWTime`
+     - Other: `date`, `integratedHeatDD65`, `integratedCoolDD65`, `dataSpan`, `numWindPackets`, `hiSolar`, `dailySolarEnergy`, `minSunlight`, `dailyETTotal`
    - **Daily Data** fields:
-      - Inside: `insideTemp`, `insideHum`
-      - Outside
-         - Temperature: `outsideTemp`, `hiOutsideTemp`, `lowOutsideTemp`,
-         - Humidity: `outsideHum`
-         - Pressure: `barometer`
-         - Wind: `windSpeed`, `hiWindSpeed`, `windDirection`, `hiWindDirection`
-         - Rain: `rain`, `hiRainRate`
-         - Other: `solarRad`, `hisolarRad`, `UV`, `hiUV`, `extraRad`, `ET`
-      - Other: `date`, `time`, `archiveInterval`, `packedTime`, `numWindSamples`
+     - Inside: `insideTemp`, `insideHum`
+     - Outside
+       - Temperature: `outsideTemp`, `hiOutsideTemp`, `lowOutsideTemp`,
+       - Humidity: `outsideHum`
+       - Pressure: `barometer`
+       - Wind: `windSpeed`, `hiWindSpeed`, `windDirection`, `hiWindDirection`
+       - Rain: `rain`, `hiRainRate`
+       - Other: `solarRad`, `hisolarRad`, `UV`, `hiUV`, `extraRad`, `ET`
+     - Other: `date`, `time`, `archiveInterval`, `packedTime`, `numWindSamples`
+7. 

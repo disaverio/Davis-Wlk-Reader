@@ -18,14 +18,14 @@ class WlkTransformer private constructor() {
         fun fromWlk(monthData: WlkMonthData) =
             MonthData(
                 date = monthData.date,
-                dailyData = monthData.dailyData.mapValues { fromWlk(it.value) }
+                dailyData = (monthData.dailyData.map { fromWlk(it) }).sortedBy { it.date }
             )
 
         fun fromWlk(dayData: WlkDayData) =
             DayData(
                 date = dayData.date,
                 summary = fromWlk(dayData.date, dayData.dailySummary1, dayData.dailySummary2),
-                records = dayData.weatherRecords.mapValues { fromWlk(dayData.date, it.value) }
+                records = (dayData.weatherRecords.map { fromWlk(dayData.date, it) }).sortedBy { it.time }
             )
 
         fun fromWlk(date: LocalDate, record: WlkWeatherDataRecord) =

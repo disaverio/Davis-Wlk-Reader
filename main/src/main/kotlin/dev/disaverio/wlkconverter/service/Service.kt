@@ -27,9 +27,9 @@ class Service(
         val dailySummaryPathname = getDailySummaryPathname(yearmonth, outPathname)
         val dailyDataPathname = getDailyDataPathname(yearmonth, outPathname)
 
-        val monthData = WlkReader.readMonth(yearmonth.split("-").first().toInt(), yearmonth.split("-").last().toInt(), inputPathname)
-        printer.printDailySummaries(monthData.dailyData.values.map { it.summary }, dailySummaryPathname)
-        printer.printDailyData(monthData.dailyData.values.map { it.records.values }.flatten(), dailyDataPathname)
+        val monthData = WlkReader.readMonthlyFile(inputPathname)
+        printer.printDailySummaries(monthData.dailyData.map { it.summary }, dailySummaryPathname)
+        printer.printDailyData(monthData.dailyData.map { it.records }.flatten(), dailyDataPathname)
     }
 
     private fun getDailySummaryPathname(prefix: String, pathname: String) =

@@ -4,5 +4,5 @@ import java.time.YearMonth
 
 data class MonthData(
     val date: YearMonth,
-    val dailyData: Map<Int, DayData>
+    val dailyData: List<DayData>
 )

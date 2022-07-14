@@ -23,7 +23,7 @@ class WlkTransformerTest {
         val monthData = WlkMonthData(
             date = YearMonth.of(2021, 10),
             headerBlock = getHeaderBlock(),
-            dailyData = mapOf(1 to getWlkDayData())
+            dailyData = listOf(getWlkDayData())
         )
         val result = WlkTransformer.fromWlk(monthData)
 
@@ -32,10 +32,10 @@ class WlkTransformerTest {
 
     @Test
     fun `fromWlk should translate to DayData model from wlk DayData raw model using the right translator`() {
-        val daydata = getWlkDayData()
-        val result = WlkTransformer.fromWlk(daydata)
+        val dayData = getWlkDayData()
+        val result = WlkTransformer.fromWlk(dayData)
 
-        assertDayDataAreEqual(daydata, result)
+        assertDayDataAreEqual(dayData, result)
     }
 
     @Test
@@ -61,18 +61,20 @@ class WlkTransformerTest {
 
     private fun assertMonthDataAreEqual(wlkMonthData: WlkMonthData, monthData: MonthData) {
         assertEquals(wlkMonthData.date, monthData.date)
-        assertEquals(wlkMonthData.dailyData.keys, monthData.dailyData.keys)
-        monthData.dailyData.keys.forEach { k ->
-            assertDayDataAreEqual(wlkMonthData.dailyData[k]!!, monthData.dailyData[k]!!)
+        assertEquals(wlkMonthData.dailyData.size, monthData.dailyData.size)
+        wlkMonthData.dailyData.forEach { wlkDayData ->
+            val dayData = monthData.dailyData.single { wlkDayData.date == it.date }
+            assertDayDataAreEqual(wlkDayData, dayData)
         }
     }
 
     private fun assertDayDataAreEqual(wlkDayData: WlkDayData, dayData: DayData) {
         assertEquals(wlkDayData.date, dayData.date)
         assertDailySummaryAreEqual(wlkDayData.dailySummary1, wlkDayData.dailySummary2, dayData.summary)
-        assertEquals(wlkDayData.weatherRecords.keys, dayData.records.keys)
-        dayData.records.keys.forEach { k ->
-            assertWeatherDataRecordAreEqual(wlkDayData.weatherRecords[k]!!, dayData.records[k]!!)
+
+        wlkDayData.weatherRecords.forEach { wlkWeatherRecord ->
+            val weatherRecord = dayData.records.single { WlkFieldsTranslator.getRecordTime(wlkWeatherRecord.packedTime) == it.time }
+            assertWeatherDataRecordAreEqual(wlkWeatherRecord, weatherRecord)
         }
     }
 
@@ -186,7 +188,7 @@ class WlkTransformerTest {
             date = LocalDate.of(2021, 10, 22),
             dailySummary1 = getWlkDailySummary1(),
             dailySummary2 = getWlkDailySummary2(),
-            weatherRecords = mapOf(1 to getWlkWeatherDataRecord())
+            weatherRecords = listOf(getWlkWeatherDataRecord())
         )
 
     private fun getWlkWeatherDataRecord() =

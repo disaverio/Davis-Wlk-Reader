@@ -5,5 +5,5 @@ import java.time.LocalDate
 data class DayData(
     val date: LocalDate,
     val summary: DailySummary,
-    val records: Map<Int, WeatherDataRecord>
+    val records: List<WeatherDataRecord>
 )

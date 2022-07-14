@@ -24,8 +24,8 @@ import kotlin.test.assertTrue
 @ExtendWith(MockKExtension::class)
 class FieldsListPrinterTest {
 
-    private val dailySummaryProps = listOf("lowBarTime", "hiSpeed", "unknownProp1", "avgOutTemp", "avgChill", "unknownProp2", "hiHeatTime", "unknownProp3").joinToString(",")
-    private val weatherDataRecordProps = listOf("windSpeed", "unknownProp1", "outsideTemp", "lowOutsideTemp", "unknownProp2", "hiRainRate", "unknownProp3", "insideTemp").joinToString(",")
+    private val dailySummaryPropsLine = "DailY_SummarY_FIELDS :lowBarTime ,hiSpeed,  unknownProp1, avgOutTemp   , avgChill ,unknownProp2,hiHeatTime,  unknownProp3 "
+    private val weatherDataRecordPropsLine = " DAILY_DATA_fields  : windSpeed,unknownProp1 , outsideTemp, lowOutsideTemp,  unknownProp2 , hiRainRate,  unknownProp3 ,  insideTemp "
 
     private val dailySummary = DailySummary(
         date = LocalDate.of(1, 1, 1),
@@ -145,9 +145,9 @@ class FieldsListPrinterTest {
         fun mockSetup() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
+                dailySummaryPropsLine,
+                weatherDataRecordPropsLine
+            ).shuffled()
         }
 
         @Test
@@ -206,9 +206,9 @@ class FieldsListPrinterTest {
         fun mockSetup() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
+                dailySummaryPropsLine,
+                weatherDataRecordPropsLine
+            ).shuffled()
         }
 
         @ParameterizedTest
@@ -281,9 +281,9 @@ class FieldsListPrinterTest {
         fun mockSetup() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
+                dailySummaryPropsLine,
+                weatherDataRecordPropsLine
+            ).shuffled()
         }
 
         @Test
@@ -309,11 +309,22 @@ class FieldsListPrinterTest {
         }
 
         @Test
-        fun `should be false when first line in fields list file, is empty`() {
+        fun `should be true when daily summary fields line, in fields list file, is not provided`() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
-                "",
-                weatherDataRecordProps
+                weatherDataRecordPropsLine
+            )
+            val p = FieldsListPrinterExtension(filePath = filePath)
+
+            assertTrue { p.printDailySummaries }
+        }
+
+        @Test
+        fun `should be false when daily summary fields line, in fields list file, is empty`() {
+            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
+            every { readFileLines(filePath) } returns listOf(
+                "daily_summary_fields:",
+                weatherDataRecordPropsLine
             )
             val p = FieldsListPrinterExtension(filePath = filePath)
 
@@ -329,9 +340,9 @@ class FieldsListPrinterTest {
         fun mockSetup() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                weatherDataRecordProps
-            )
+                dailySummaryPropsLine,
+                weatherDataRecordPropsLine
+            ).shuffled()
         }
 
         @Test
@@ -357,12 +368,23 @@ class FieldsListPrinterTest {
         }
 
         @Test
-        fun `should be false when second line in fields list file, is empty`() {
+        fun `should be true when daily data fields line, in fields list file, is not provided`() {
             mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
             every { readFileLines(filePath) } returns listOf(
-                dailySummaryProps,
-                ""
-            )
+                dailySummaryPropsLine
+            ).shuffled()
+            val p = FieldsListPrinterExtension(filePath = filePath)
+
+            assertTrue { p.printDailyData }
+        }
+
+        @Test
+        fun `should be false when daily data fields line, in fields list file, is empty`() {
+            mockkStatic("dev.disaverio.wlkconverter.utils.FileHelperKt")
+            every { readFileLines(filePath) } returns listOf(
+                dailySummaryPropsLine,
+                "daily_data_fields:"
+            ).shuffled()
             val p = FieldsListPrinterExtension(filePath = filePath)
 
             assertFalse { p.printDailyData }

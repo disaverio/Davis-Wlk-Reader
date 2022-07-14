@@ -9,5 +9,5 @@ data class DayData(
     val date: LocalDate,
     val dailySummary1: DailySummary1,
     val dailySummary2: DailySummary2,
-    val weatherRecords: Map<Int, WeatherDataRecord>
+    val weatherRecords: List<WeatherDataRecord>
 )
