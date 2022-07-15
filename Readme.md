@@ -1,15 +1,42 @@
-Application to translate binary `wlk` files from Davis Weather Instruments, to human-readable `csv` files
+# Wlk Converter
 
+## Quick Start
+Tool to convert binary `wlk` files from Davis Weather Instruments, to `csv` file.
+This is a needed step to, for example, import your WeatherLink `wlk` files to a different data collecting software like [Weewx](https://github.com/weewx/).  
+
+Basic usage: download the latest release, place it in a folder containing one or more `wlk` files, and launch it with no options:
+```shell
+java -jar wlk-converter.jar
 ```
-Usage: WlkConverter options_list
+for each `wlk` file, two csv files will be created: one with all the daily records, and one with the daily summaries.
+
+To avoid printing the whole list of fields available in the `wlk` archive, you can specify a text file with the list of desired fields.
+A template-like text file with the full list of fields is here available in the `assets` folder with the name `fullListOfFields.txt`: simply edit it, and then pass it to the command:
+```shell
+java -jar wlk-converter.jar -p desiredFields.txt
+```
+
+It is possible to specify an input folder different from the current one, or directly a single `wlk` file.
+Also a different output folder could be defined:
+```shell
+java -jar wlk-converter.jar \
+    -i /path/to/folder/with/wlk-files \
+    -o /path/to/output-folder \
+    -p desiredFields.txt
+```
+
+To know more about options to control the unit system and the output files content like header, or fields sorting, see the [Details](#Details) section
+
+## Details
+```shell
 Options:
     --version, -v -> Print version 
     --input, -i -> Input file path { String }
     --output, -o -> Output folder path { String }
     --unit, -u -> Unit system used for values in the printed output { Value should be one of [si, imperial] }
     --skip-header, -s [false] -> Skip header printing 
-    --outputFormat, -f [CSV] -> Format for output file { Value should be one of [csv] }
-    --fieldsListFile, -p -> Path to file containing list of fields printed in output { String }
+    --output-format, -f [CSV] -> Format for output file { Value should be one of [csv] }
+    --fields-file, -p -> Path to file containing list of fields printed in output { String }
     --help, -h -> Usage info  
 ```
 

@@ -16,8 +16,8 @@ fun main(args: Array<String>) {
     val outputFolderPath by parser.option(ArgType.String, "output", "o", "Output folder path")
     val unitSystem by parser.option(ArgType.Choice<UnitSystem>(), "unit", "u", "Unit system used for values in the printed output")
     val skipHeader by parser.option(ArgType.Boolean, "skip-header", "s", "Skip header printing").default(false)
-    val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), "outputFormat", "f", "Format for output file").default(OutputFormat.CSV) //.multiple()
-    val outputFieldsListFilePath by parser.option(ArgType.String, "fieldsListFile", "p", "Path to file containing list of fields printed in output")
+    val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), "output-format", "f", "Format for output file").default(OutputFormat.CSV) //.multiple()
+    val outputFieldsListFilePath by parser.option(ArgType.String, "fields-file", "p", "Path to file containing list of fields printed in output")
 
     parser.parse(args)
 
