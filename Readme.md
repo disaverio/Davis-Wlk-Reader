@@ -6,6 +6,7 @@ Options:
     --input, -i -> Input file path (always required) { String }
     --output, -o -> Output folder path { String }
     --unit, -u -> Unit system used for values in the printed output { Value should be one of [si, imperial] }
+    --skip-header, -s [false] -> Skip header printing 
     --outputFormat, -f [CSV] -> Format for output file { Value should be one of [csv] }
     --fieldsListFile, -p -> Path to file containing list of fields printed in output { String }
     --help, -h -> Usage info 
@@ -26,8 +27,9 @@ Options:
    **SI values**: `Length:metre`, `Precipitation:millimetre`, `Pressure:pascal`, `RainRate:millimetreperhour`, `Speed:metrepersecond`, `Temperature:celsius`
    
    **Imperial values**: `Length:mile`, `Precipitation:inch`, `Pressure:inchesofmercury`, `RainRate:inchperhour`, `Speed:mileperhour`, `Temperature:fahrenheit`
-8. `-f`: at the moment is **not used**, since only `csv` is supported as output format
-9. `-p` is optional: path to text files with list of fields to be printed in output.
+5. `-s`: is optional. Used to don't print the header in the generated csv files. Default: false.
+6. `-f`: at the moment is **not used**, since only `csv` is supported as output format
+7. `-p` is optional: path to text files with list of fields to be printed in output.
 
    To define daily data fields to be printed, begin the line with `DAILY_DATA_FIELDS:` header, and then specify a comma separated values list of fields.
    

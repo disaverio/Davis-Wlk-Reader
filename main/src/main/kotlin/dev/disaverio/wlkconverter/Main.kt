@@ -13,6 +13,7 @@ fun main(args: Array<String>) {
     val inputFilePathList by parser.option(ArgType.String, "input", "i", "Input file path").required().multiple()
     val outputFolderPath by parser.option(ArgType.String, "output", "o", "Output folder path")
     val unitSystem by parser.option(ArgType.Choice<UnitSystem>(), "unit", "u", "Unit system used for values in the printed output")
+    val skipHeader by parser.option(ArgType.Boolean, "skip-header", "s", "Skip header printing").default(false)
     val outputFormat by parser.option(ArgType.Choice<OutputFormat>(), "outputFormat", "f", "Format for output file").default(OutputFormat.CSV) //.multiple()
     val outputFieldsListFilePath by parser.option(ArgType.String, "fieldsListFile", "p", "Path to file containing list of fields printed in output")
 
@@ -20,7 +21,7 @@ fun main(args: Array<String>) {
 
     val fileList = getSanitizedFileList(inputFilePathList)
     val checkedOutputFolderPath = getOutputFolderPath(outputFolderPath)
-    val service = Service(unitSystem, outputFieldsListFilePath, checkedOutputFolderPath, outputFormat)
+    val service = Service(unitSystem, outputFieldsListFilePath, skipHeader, checkedOutputFolderPath, outputFormat)
 
     println("Valid files retrieved:")
     fileList.forEach { println("  $it") }

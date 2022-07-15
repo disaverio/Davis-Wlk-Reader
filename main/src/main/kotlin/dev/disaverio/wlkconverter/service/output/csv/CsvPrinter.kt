@@ -9,7 +9,11 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter
 
-class CsvPrinter(unitSystem: UnitSystem? = null, outputFieldsListFilename: String?): FieldsListPrinter(unitSystem, outputFieldsListFilename), Printer {
+class CsvPrinter(
+    outputFieldsListFilename: String?,
+    unitSystem: UnitSystem?,
+    private val skipHeader: Boolean
+): FieldsListPrinter(outputFieldsListFilename, unitSystem), Printer {
 
     override fun printDailySummaries(elements: List<DailySummary>, outputPathname: String) {
         if (printDailySummaries) print(elements, outputPathname)
@@ -21,7 +25,7 @@ class CsvPrinter(unitSystem: UnitSystem? = null, outputFieldsListFilename: Strin
 
     private inline fun<reified T> print(elements: List<T>, outputPathname: String) {
         val printer = CSVPrinter(FileWriter(outputPathname), CSVFormat.DEFAULT)
-        printer.printRecord(getHeader(elements))
+        if (!skipHeader) printer.printRecord(getHeader(elements))
         printer.printRecords(getRequestedFields(elements))
         printer.flush()
         printer.close()

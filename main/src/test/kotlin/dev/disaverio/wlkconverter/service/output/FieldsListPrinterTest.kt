@@ -218,7 +218,7 @@ class FieldsListPrinterTest {
             unitSystem: UnitSystem?,
             expectedValues: String
         ) {
-            val p = FieldsListPrinterExtension(unitSystem, filePath)
+            val p = FieldsListPrinterExtension(filePath, unitSystem)
 
             assertEquals(listOf(expectedValues.split(",")), p.getRequestedFields(listOf(dailySummary)))
         }
@@ -229,7 +229,7 @@ class FieldsListPrinterTest {
             unitSystem: UnitSystem?,
             expectedValues: String
         ) {
-            val p = FieldsListPrinterExtension(unitSystem, filePath)
+            val p = FieldsListPrinterExtension(filePath, unitSystem)
 
             assertEquals(listOf(expectedValues.split(",")), p.getRequestedFields(listOf(weatherDataRecord)))
         }
@@ -394,7 +394,7 @@ class FieldsListPrinterTest {
 }
 
 
-private class FieldsListPrinterExtension(unitSystem: UnitSystem? = null, filePath: String?) : FieldsListPrinter(unitSystem, filePath) {
+private class FieldsListPrinterExtension(filePath: String?, unitSystem: UnitSystem? = null) : FieldsListPrinter(filePath, unitSystem) {
     public override fun <T> getHeader(elements: List<T>) = super.getHeader(elements)
     public override fun <T> getRequestedFields(elements: List<T>) = super.getRequestedFields(elements)
     public override val printDailySummaries = super.printDailySummaries

@@ -9,6 +9,7 @@ import dev.disaverio.wlkreader.types.units.UnitSystem
 class Service(
     unitSystem: UnitSystem?,
     outputFieldsListFilename: String?,
+    skipHeader: Boolean,
     private val outputFolderPath: String,
     private val outputFormat: OutputFormat
 ) {
@@ -16,7 +17,7 @@ class Service(
 
     init {
         printer = when(outputFormat) {
-            OutputFormat.CSV -> CsvPrinter(unitSystem, outputFieldsListFilename)
+            OutputFormat.CSV -> CsvPrinter(outputFieldsListFilename, unitSystem, skipHeader)
         }
     }
 

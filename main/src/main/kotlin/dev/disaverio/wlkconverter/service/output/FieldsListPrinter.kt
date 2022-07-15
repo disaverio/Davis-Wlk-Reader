@@ -8,7 +8,10 @@ import dev.disaverio.wlkreader.types.units.UnitSystem
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
-abstract class FieldsListPrinter(private val unitSystem: UnitSystem? = null, outputFieldsListFilename: String?) {
+abstract class FieldsListPrinter(
+    outputFieldsListFilename: String?,
+    private val unitSystem: UnitSystem?
+) {
 
     private val dailySummaryFields: List<KProperty1<DailySummary, *>>
     private val weatherDataRecordFields: List<KProperty1<WeatherDataRecord, *>>
@@ -25,7 +28,7 @@ abstract class FieldsListPrinter(private val unitSystem: UnitSystem? = null, out
         weatherDataRecordFields = getListOfExpectedPropertiesFromFullListOfProperties(propertiesFromFile["DD"])
     }
 
-    protected open fun<T> getHeader(elements: List<T>) =
+    protected open fun<T> getHeader(elements: List<T>): List<String> =
         when (elements.firstOrNull()) {
             is DailySummary -> dailySummaryFields.map { it.name }
             is WeatherDataRecord -> weatherDataRecordFields.map { it.name }
@@ -33,14 +36,14 @@ abstract class FieldsListPrinter(private val unitSystem: UnitSystem? = null, out
             else -> throw Exception("Unknown element type.")
         }
 
-    protected open fun<T> getRequestedFields(elements: List<T>) =
+    protected open fun<T> getRequestedFields(elements: List<T>): List<List<String>> =
         when (elements.firstOrNull()) {
             is DailySummary -> getRequestedFieldsBasedOnRequestedPropertiesList(elements as List<DailySummary>, dailySummaryFields)
             is WeatherDataRecord -> getRequestedFieldsBasedOnRequestedPropertiesList(elements as List<WeatherDataRecord>, weatherDataRecordFields)
             else -> throw Exception("Unknown element type.")
         }
 
-    private fun<T> getRequestedFieldsBasedOnRequestedPropertiesList(elements: List<T>, requiredPropertiesList: List<KProperty1<T, *>>) =
+    private fun<T> getRequestedFieldsBasedOnRequestedPropertiesList(elements: List<T>, requiredPropertiesList: List<KProperty1<T, *>>): List<List<String>> =
         elements.map {
             el -> requiredPropertiesList.map {
                 val field = it.get(el)
