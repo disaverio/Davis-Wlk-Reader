@@ -1,8 +1,18 @@
 # Wlk Converter
 
-## Quick Start
-Tool to convert binary `wlk` files from Davis Weather Instruments, to `csv` file.
-This is a needed step to, for example, import your WeatherLink `wlk` files to a different data collecting software like [Weewx](https://github.com/weewx/).  
+Multi-platform tool to convert binary `wlk` files from Davis Weather Instruments, to `csv` file.
+This is a needed step to, for example, import your WeatherLink `wlk` files to a different data collecting software like [Weewx](https://github.com/weewx/).
+
+The tool is multi-platform,
+flexible - providing fine-grained control to the output (unit system, printed fields, fields sorting, csv header) -,
+powerful - allowing to convert entire folders of `wlk` files with no required interaction -,
+and highly tested (test-coverage close to 100%):
+<table><tbody>
+<tr><th>Package</th><th>Class, %</th><th>Method, %</th><th>Line, %</th></tr>
+<tr><td>all classes</td><td>98% (48/49)</td><td>96.4% (269/279)</td><td>97.9% (925/945)</td></tr>
+</tbody></table>
+
+## Usage 
 
 Basic usage: download the latest release, place it in a folder containing one or more `wlk` files, and launch it with no options:
 ```shell
@@ -10,7 +20,7 @@ java -jar wlk-converter.jar
 ```
 for each `wlk` file, two csv files will be created: one with all the daily records, and one with the daily summaries.
 
-To avoid printing the whole list of fields available in the `wlk` archive, you can specify a text file with the list of desired fields.
+**To avoid printing the whole list of fields** available in the `wlk` archive, you have to provide a text file with the list of desired fields.
 A template-like text file with the full list of fields is here available in the `assets` folder with the name `fullListOfFields.txt`: simply edit it, and then pass it to the command:
 ```shell
 java -jar wlk-converter.jar -p desiredFields.txt
