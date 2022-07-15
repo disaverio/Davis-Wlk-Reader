@@ -8,7 +8,7 @@
         <module>wlk-reader</module>
     </modules>
     <groupId>dev.disaverio</groupId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>wlk-converter</name>
@@ -154,6 +154,6 @@
     <scm>
         <connection>scm:git:git@github.com:disaverio/Davis-Wlk-Reader.git</connection>
         <developerConnection>scm:git:git@github.com:disaverio/Davis-Wlk-Reader.git</developerConnection>
-        <tag>v0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 </project>
