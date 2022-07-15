@@ -44,8 +44,8 @@ abstract class FieldsListPrinter(
         }
 
     private fun<T> getRequestedFieldsBasedOnRequestedPropertiesList(elements: List<T>, requiredPropertiesList: List<KProperty1<T, *>>): List<List<String>> =
-        elements.map {
-            el -> requiredPropertiesList.map {
+        elements.map { el ->
+            requiredPropertiesList.map {
                 val field = it.get(el)
                 if (field is TypeWithUnitSystem<*>) field.toString(unitSystem) else field.toString()
             }

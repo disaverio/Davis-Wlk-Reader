@@ -1,0 +1,2 @@
+DAILY_DATA_FIELDS:date,time,outsideTemp,hiOutsideTemp,lowOutsideTemp,outsideHum,windSpeed,windDirection,hiWindSpeed,hiWindDirection,barometer,rain,hiRainRate,insideTemp,insideHum,numWindSamples,archiveInterval
+DAILY_SUMMARY_FIELDS:
