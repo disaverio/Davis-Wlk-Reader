@@ -153,4 +153,9 @@
         </dependencies>
     </dependencyManagement>
 
+    <scm>
+        <connection>scm:git:git@github.com:disaverio/Davis-Wlk-Reader.git</connection>
+        <developerConnection>scm:git:git@github.com:disaverio/Davis-Wlk-Reader.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 </project>
