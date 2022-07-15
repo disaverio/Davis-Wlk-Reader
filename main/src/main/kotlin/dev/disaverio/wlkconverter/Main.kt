@@ -6,11 +6,13 @@ import dev.disaverio.wlkreader.types.units.UnitSystem
 import kotlinx.cli.*
 import java.io.File
 import java.nio.file.Paths
+import java.util.*
 import kotlin.io.path.isDirectory
 
 fun main(args: Array<String>) {
     val parser = ArgParser("WlkConverter")
-    val inputFilePathList by parser.option(ArgType.String, "input", "i", "Input file path").required().multiple()
+    val version by parser.option(ArgType.Boolean, "version", "v", "Print version")
+    val inputFilePathList by parser.option(ArgType.String, "input", "i", "Input file path").multiple()
     val outputFolderPath by parser.option(ArgType.String, "output", "o", "Output folder path")
     val unitSystem by parser.option(ArgType.Choice<UnitSystem>(), "unit", "u", "Unit system used for values in the printed output")
     val skipHeader by parser.option(ArgType.Boolean, "skip-header", "s", "Skip header printing").default(false)
@@ -19,17 +21,26 @@ fun main(args: Array<String>) {
 
     parser.parse(args)
 
-    val fileList = getSanitizedFileList(inputFilePathList)
+    if (version == true) {
+        val properties = Properties()
+        properties.load(object {}.javaClass.classLoader.getResourceAsStream("application.properties"))
+        println(properties.getProperty("version"))
+        return
+    }
+
+    val fileList = getSanitizedFileList(inputFilePathList as MutableList<String>)
     val checkedOutputFolderPath = getOutputFolderPath(outputFolderPath)
     val service = Service(unitSystem, outputFieldsListFilePath, skipHeader, checkedOutputFolderPath, outputFormat)
 
-    println("Valid files retrieved:")
+    println("Valid files found:")
     fileList.forEach { println("  $it") }
 
     fileList.forEach { service.printMonth(it) }
 }
 
-private fun getSanitizedFileList(inputFilePathList: List<String>): List<String> {
+private fun getSanitizedFileList(inputFilePathList: MutableList<String>): List<String> {
+    if (inputFilePathList.isEmpty()) inputFilePathList.add(Paths.get("").toAbsolutePath().toString())
+
     val filenameRegex = Regex("\\d{4}-\\d{2}\\.wlk")
     val list = mutableListOf<String>()
 
