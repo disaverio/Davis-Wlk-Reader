@@ -2,6 +2,7 @@ package dev.disaverio.wlkreader.models.data
 
 import dev.disaverio.wlkreader.types.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 /*
@@ -20,6 +21,7 @@ import java.time.LocalTime
  *   WeatherDataRecord.extraHum
  */
 class WeatherDataRecord(
+    val dateTime: LocalDateTime,
     val date: LocalDate,
     val time: LocalTime,
     val archiveInterval: Int,

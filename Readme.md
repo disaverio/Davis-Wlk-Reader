@@ -105,4 +105,4 @@ Options:
        - Wind: `windSpeed`, `hiWindSpeed`, `windDirection`, `hiWindDirection`
        - Rain: `rain`, `hiRainRate`
        - Other: `solarRad`, `hisolarRad`, `UV`, `hiUV`, `extraRad`, `ET`
-     - Other: `date`, `time`, `archiveInterval`, `packedTime`, `numWindSamples`
+     - Other: `dateTime`, `date`, `time`, `archiveInterval`, `packedTime`, `numWindSamples`

@@ -29,10 +29,12 @@ class WlkTransformer private constructor() {
                 records = (dayData.weatherRecords.map { fromWlk(dayData.date, it) }).sortedBy { LocalDateTime.of(it.date, it.time) }
             )
 
-        fun fromWlk(date: LocalDate, record: WlkWeatherDataRecord) =
-            WeatherDataRecord(
-                date = WlkFieldsTranslator.getDateTime(date, record.packedTime).toLocalDate(),
-                time = WlkFieldsTranslator.getDateTime(date, record.packedTime).toLocalTime(),
+        fun fromWlk(date: LocalDate, record: WlkWeatherDataRecord): WeatherDataRecord {
+            val dateTime = WlkFieldsTranslator.getDateTime(date, record.packedTime)
+            return WeatherDataRecord(
+                dateTime = dateTime,
+                date = dateTime.toLocalDate(),
+                time = dateTime.toLocalTime(),
                 archiveInterval = WlkFieldsTranslator.getArchiveInterval(record.archiveInterval),
                 packedTime = WlkFieldsTranslator.getDimensionlessValue(record.packedTime),
                 outsideTemp = WlkFieldsTranslator.getTemperature(record.outsideTemp),
@@ -56,6 +58,7 @@ class WlkTransformer private constructor() {
                 extraRad = WlkFieldsTranslator.getDimensionlessValue(record.extraRad),
                 ET = WlkFieldsTranslator.getEvapotranspiration(record.ET)
             )
+        }
 
         fun fromWlk(date: LocalDate, ds1: DailySummary1, ds2: DailySummary2) =
             DailySummary(
