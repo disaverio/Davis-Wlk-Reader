@@ -5,6 +5,7 @@ import dev.disaverio.wlkconverter.service.output.Printer
 import dev.disaverio.wlkconverter.service.output.csv.CsvPrinter
 import dev.disaverio.wlkreader.service.WlkReader
 import dev.disaverio.wlkreader.types.units.UnitSystem
+import java.io.File
 
 class Service(
     unitSystem: UnitSystem?,
@@ -22,10 +23,10 @@ class Service(
     }
 
     fun printMonth(inputPathname: String) {
-        val yearmonth = inputPathname.split("/").last().split(".").first()
+        val yearmonth = inputPathname.split(File.separator).last().split(".").first()
 
         val monthData = WlkReader.readMonthlyFile(inputPathname)
-        printer.printDailySummaries(monthData.dailyData.map { it.summary }, "$outputFolderPath/DailySummary_$yearmonth.${outputFormat.fileExt}")
-        printer.printDailyData(monthData.dailyData.map { it.records }.flatten(), "$outputFolderPath/DailyData_$yearmonth.${outputFormat.fileExt}")
+        printer.printDailySummaries(monthData.dailyData.map { it.summary }, "$outputFolderPath${File.separator}DailySummary_$yearmonth.${outputFormat.fileExt}")
+        printer.printDailyData(monthData.dailyData.map { it.records }.flatten(), "$outputFolderPath${File.separator}DailyData_$yearmonth.${outputFormat.fileExt}")
     }
 }

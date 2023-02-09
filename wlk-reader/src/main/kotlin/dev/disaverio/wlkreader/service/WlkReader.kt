@@ -19,7 +19,7 @@ class WlkReader private constructor() {
 
     companion object {
         fun readMonthlyFile(filePath: String): MonthData {
-            val yearmonth = filePath.split("/").last().split(".").first()
+            val yearmonth = filePath.split(File.separator).last().split(".").first()
             val year = yearmonth.split("-").first().toInt()
             val month = yearmonth.split("-").last().toInt()
 
